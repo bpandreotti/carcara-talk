@@ -1,0 +1,500 @@
+\documentclass[usepdftitle=false,aspectratio=169]{beamer}
+\usepackage{amsmath, amsfonts, amssymb}
+\usepackage{xspace}
+\usepackage{xparse}
+\usepackage[yyyymmdd]{datetime}
+\usepackage{ulem}
+\usepackage{array}
+\usepackage{multirow}
+\usepackage{booktabs}
+\usepackage{stmaryrd}
+\usepackage{subcaption}
+\usepackage{bussproofs}
+\usepackage{mathpartir}
+
+\usepackage{tikz}
+
+\usetikzlibrary{shapes,arrows,positioning,decorations.markings,matrix,fit,calc}
+\tikzstyle{line} = [draw, -latex']
+\tikzstyle{rline} = [draw, latex'-]
+\pgfdeclarelayer{background}
+\pgfsetlayers{background,main}
+\EnableBpAbbreviations
+
+\hypersetup{
+   pdftitle={Talk - Carcara: An efficient proof checker and elaborator for SMT
+   proofs in the Alethe format - TACAS 2023},
+   pdfauthor={Bruno Andreotti},
+   pdfkeywords={},
+   pdfborder={0 0 0}
+   draft=false,
+   bookmarksnumbered,
+   bookmarksdepth=2,
+   bookmarksopenlevel=2,
+   bookmarksopen
+}
+
+\renewcommand{\dateseparator}{--}
+
+%%% BEGIN Defining style
+\useinnertheme[outline]{chamfered}
+\setbeamertemplate{navigation symbols}{}%remove navigation symbols
+\usefonttheme[onlymath]{serif}%beamer math looks like article math
+\usecolortheme{seahorse}
+\setbeamercolor{palette quinary}{use=structure,fg=black,bg=white}
+%%% END Defining style
+
+%%% BEGIN Biblatex for references
+\usepackage[backend=bibtex,
+doi=false,isbn=false,url=false,
+% show initials only
+style=alphabetic,
+% Show name
+% style=authoryear-icomp,
+% citation label has 4 initials if up to 4 authors, 3 and "+" otherwise
+maxalphanames= 4, maxcitenames = 3, minalphanames = 3, minnames = 3]{biblatex}
+% citation label has first author's name et al
+% maxcitenames=2,backend=biber]{biblatex}
+
+\bibliography{./refs.bib}
+
+%%%%%%%%%%%%% macros
+
+\mathchardef\mhyphen="2D % Define a "math hyphen"
+
+\usepackage{pifont}
+
+\newcommand{\bluecheck}{{\color{blue}\checkmark}}
+\newcommand{\redmark}{\color{red}{\ding{55}}}
+
+\newcommand\vvthinspace{\kern+0.041667em}
+\newcommand\vthinspace{\kern+0.083333em}
+\newcommand\negvthinspace{\kern-0.083333em}
+\newcommand\negvvthinspace{\kern-0.041667em}
+
+\newcommand\FV[1]{\textrm{FV}(#1)}
+
+\newcommand\sym[1]{\mathsf{#1}}
+
+%ADT font macros
+\newcommand{\typename}[1]{\mathbf{\mathrm{#1}}}
+\newcommand{\consname}[1]{\mathrm{#1}}
+\newcommand{\selname}[1]{\mathrm{#1}}
+\newcommand{\testername}[1]{\mathrm{#1}}
+
+\newcommand{\SInt}{\typename{Int}}
+\newcommand{\SBool}{\typename{Bool}}
+\newcommand{\SStr}{\typename{Str}}
+
+\newcommand{\evalfn}[1]{\mathrm{eval}_{#1}}
+
+\DeclareDocumentCommand{\qnt}{ O{n} m O{\psi}}{\innerqnt(#2,#1) #3}
+\def\innerqnt(#1,#2,#3){#1 \bar #2.\>}
+
+\DeclareDocumentCommand{\terms}{ m O{}}{\mathbf{T}_{#2}(#1)}
+
+\DeclareDocumentCommand{\bfapp}{ O{f} m O{n}}{#1({\bar #2}_{#3})}
+\DeclareDocumentCommand{\enum}{ O{n} m O{,\,} O{} O{1}}{#2_#5#4#3\dots #3#2_{#1}#4}
+\DeclareDocumentCommand{\benum}{ O{n} m O{\mapsto} O{} O{,\,} O{1}}{\innerbenum(#2,#3,#6,#4)#5\dots #5\innerbenum(#2,#3,#1,#4)}
+\def\innerbenum(#1,#2,#3,#4,#5){#1_{#4}#3 #5{#2_{#4}}}
+
+\DeclareDocumentCommand{\bfenum}{O{\mapsto} m}{\innerbfenum(#2,#1)}
+  \def\innerbfenum(#1,#2,#3){\bar #1#3 \bar #2}
+\DeclareDocumentCommand{\fapp}{ O{f} m O{n} O{,\,} O{(} O{)}}{#1#5#2_1#4\dots #4#2_{#3}#6}
+
+% Column that takes width (left justified): L{1cm}, e.g.
+\newcolumntype{L}[1]{>{\raggedright\arraybackslash$} p{#1} <{$}}
+
+% Column with math mode in displaystyle
+\newcolumntype{F}[1]{>{$\displaystyle} #1 <{$}}
+
+% Column with math mode in displaystyle
+\newcolumntype{D}[1]{>{\displaystyle} #1 <{}}
+
+% Allows to break like in cell; first arg is $t,b,c$, for alignment with other cells
+\newcommand{\specialcell}[2][c]{%
+  \begin{tabular}[#1]{@{}l@{}}#2\end{tabular}}
+
+\newcommand{\ccfv}{\textsc{CCFV}}
+
+% \newcommand{\cdclt}{CDCL($\mathcal{T}$)}
+\newcommand{\cdclt}{CDCL(T)}
+\newcommand{\dpllt}{\cdclt}
+
+\newcommand{\cvcho}{\textsc{cvc}4-\textsc{ho}\xspace}
+\newcommand{\cvc}{\textsc{cvc}4\xspace}
+\newcommand{\zzz}{Z3}
+\newcommand{\verit}{\textsc{veriT}\xspace}
+
+\newcommand{\basestrat}[1]{{\bf #1}}
+\newcommand\interleavestrat[2]{\basestrat{#1}+\basestrat{#2}}
+\newcommand\mathinterleavestrat[2]{$\mathbf{#1}$+$\mathbf{#2}$}
+\newcommand\prioritystrat[2]{\basestrat{#1};\basestrat{#2}}
+\newcommand{\zbasestrat}[1]{{\bf z3 #1}}
+\newcommand{\zprioritystrat}[2]{{\bf z3} \basestrat{#1};\basestrat{#2}}
+\newcommand{\E}{\mathsf{E}}
+\newcommand{\Q}{\mathsf{Q}}
+\newcommand{\M}{\mathsf{M}}
+\newcommand{\ite}{\mathsf{ite}}
+\newcommand{\Mod}{\mathcal{M}}
+\newcommand{\termordereq}{\preceq}
+\newcommand{\termorder}{\prec}
+\newcommand{\teq}{\simeq}
+\newcommand{\tneq}{\not\simeq}
+
+\newcommand{\inputform}{\psi}
+\newcommand{\matrixform}{\varphi}
+
+\newcommand\vitem{\vfill\item}
+\newcommand\pvitem{\pause\vfill\item}
+\newcommand\pitem{\pause\item}
+
+\newcommand{\cvcsy}{\textsc{cvc}4\textsc{sy}\xspace}
+\newcommand{\cvccegis}{\textsc{cvc+c}\xspace}
+\newcommand{\cvcu}{\textsc{cvc+upi}\xspace}
+\newcommand{\cvcuci}{\textsc{cvc+upi+e}\xspace}
+\newcommand{\cvcport}{\textsc{cvc-port}\xspace}
+\newcommand{\loopinv}{\textsc{loopinvgen}\xspace}
+
+\newcommand{\divc}{D\&C\xspace}
+
+% AJR : update these
+\newcommand{\unif}{Unif+PI\xspace}
+\newcommand{\unifci}{Unif+PI+E\xspace}
+\newcommand{\smtclass}{\textsc{SMTClassify}\xspace}
+\newcommand{\learn}{\textsc{Learn}\xspace}
+\newcommand{\classchecker}{\textsc{ClassChecker}\xspace}
+
+%%%%%%%%%%%%
+
+
+% To avoid number in slides that break, like the references one
+\setbeamertemplate{frametitle continuation}{}
+
+% Small font
+\renewcommand*{\bibfont}{\scriptsize}
+%%% END Biblatex for references
+
+
+
+%%% BEGIN DEFINING TITLE PAGE
+
+\defbeamertemplate{title page}{mystyle}[1][]
+{
+  \vbox{}
+  \vfill
+  \begingroup
+    \centering
+    {\usebeamercolor[fg]{titlegraphic}\inserttitlegraphic\par}
+    \vskip1em
+    \begin{beamercolorbox}[sep=0pt,center,#1,rounded=true,wd=11cm]{title}
+      \usebeamerfont{title}\inserttitle\par%
+      \ifx\insertsubtitle\@empty%
+      \else%
+        \vskip0.25em%
+        {\usebeamerfont{subtitle}\usebeamercolor[fg]{subtitle}\insertsubtitle\par}%
+      \fi%
+    \end{beamercolorbox}%
+    \vskip1em\par
+    \begin{beamercolorbox}[sep=8pt,center,#1]{author}
+      \usebeamerfont{author}\insertauthor
+    \end{beamercolorbox}
+    \begin{beamercolorbox}[sep=8pt,center,#1]{institute}
+      \usebeamerfont{institute}\insertinstitute
+    \end{beamercolorbox}
+    \begin{beamercolorbox}[sep=0pt,center,#1]{date}
+      \usebeamerfont{date}\insertdate
+    \end{beamercolorbox}%
+  \endgroup
+  \vfill
+}
+
+\setbeamertemplate{title page}[mystyle]
+
+%%% END DEFINING TITLE PAGE
+
+%%% BEGIN Meta information
+\author[Bruno Andreotti]
+{%
+  \texorpdfstring{
+    \emph{Bruno Andreotti}, Hanna Lachnitt, Haniel Barbosa\\
+      \vspace{3ex}
+    \begin{columns}
+      \column{.45\linewidth}
+        \centering
+        \includegraphics[height=0.15\textheight]{images/Logo_UFMG.jpg}
+      \column{.45\linewidth}
+        \centering
+        \includegraphics[height=0.13\textheight]{images/centaur.pdf}
+        \includegraphics[height=0.05\textheight]{images/centaur-wordmark.png}
+        \vspace{-1ex}
+    \end{columns}
+  }
+  {}
+}
+
+\date{TACAS, ETAPS 2023 at Paris, France, 2023--04--24}
+
+\title[Carcara: An efficient proof checker and elaborator for SMT proofs in the
+Alethe format] {Carcara: An efficient proof checker and elaborator for SMT
+proofs in the Alethe format}
+
+% Redifining footer
+\makeatother
+\setbeamertemplate{footline}
+{
+  \leavevmode%
+  \hbox{%
+    \begin{beamercolorbox}[wd=.6\paperwidth,ht=2.5ex,dp=1ex,left]{title in head/foot}%
+      {\hspace{1em}\usebeamerfont{title in head/foot}\insertshorttitle}
+    \end{beamercolorbox}%
+    \begin{beamercolorbox}[wd=.2\paperwidth,ht=2.5ex,dp=1ex,left]{title in head/foot}%
+      {\hspace{1em}\usebeamerfont{title in head/foot}Bruno Andreotti, UFMG}
+    \end{beamercolorbox}%
+    \begin{beamercolorbox}[wd=.2\paperwidth,ht=2.5ex,dp=1ex,right]{title in head/foot}%
+      \insertframenumber{} / \inserttotalframenumber\hspace{1em}
+    \end{beamercolorbox}}%
+  \vskip0pt%
+}
+\makeatletter
+%%% END Meta information
+
+%%% BEGIN Tikz setup
+\usepackage{tikz}
+\usetikzlibrary{positioning,calc,intersections,backgrounds, fadings}
+\usetikzlibrary{shapes}
+
+  \tikzset{
+    invisible/.style={opacity=0},
+    visible on/.style={alt=#1{}{invisible}},
+    alt/.code args={<#1>#2#3}{%
+      \alt<#1>{\pgfkeysalso{#2}}{\pgfkeysalso{#3}} % \pgfkeysalso doesn't change the path
+    },
+  }
+
+\definecolor{BloodRed}{rgb}{.86,0,0}
+\definecolor{gold(metallic)}{rgb}{0.83, 0.69, 0.22}
+
+\definecolor{procColor}{rgb}{0.628,0.35,0.17}
+\definecolor{cnfColor}{rgb}{0.82, 0.0, 0.86}
+% \definecolor{cnfColor}{rgb}{.83,.66,0}
+\definecolor{satColor}{rgb}{.83,0,0}
+\definecolor{thSolverColor}{rgb}{0,.5,0}
+\definecolor{thRwColor}{rgb}{0,0,1}
+\definecolor{thCombColor}{rgb}{0.5,0.5,0}
+
+% spec
+\definecolor{spec}{rgb}{0.0, 0.0, 0.86}
+% syntax recstrictions
+\definecolor{grammar}{rgb}{0.82, 0.0, 0.86}
+
+\tikzfading[
+  name=arrowfading,
+  top color=transparent!0,
+  bottom color=transparent!95
+]
+\newcommand*{\tikzarrow}[2]{%
+  \tikz[
+    baseline=(A.base),             % Set baseline to the baseline of node content
+    font=\footnotesize\sffamily    % Set fontsize of the node content
+  ]
+  \node[
+    single arrow,                  % Shape of the node
+    single arrow head extend=4pt,  % Actual width of arrow head
+    single arrow tip angle=150,    % Adjust arrow tip angle
+    shape border rotate=270,       % Rotate the arrow shape to point down
+    draw=red!25,                   % Draw the node shape (with certain border color
+    inner sep=2pt,                 % Separation between node content and node shape
+    top color=white,               % Shading color on top of node
+    bottom color=#1,               % Shading color on bottom of node
+    general shadow={               % Specifications for the shadow
+      fill=black,
+      shadow yshift=-0.5ex,
+      path fading=arrowfading
+    }
+  ] (A) {#2};%
+}
+
+%%% END Tikz setup
+
+\newcommand{\qgo}[1]{\innerqgo(#1)}
+    \def\innerqgo(#1,#2,#3){#1 #2_1\dots #2_n.~{#3}}
+\def\qg#1{\innerqg(#1)}
+    \def\innerqg(#1,#2,#3){#1\mathbf{#2}.~{#3}}
+\DeclareDocumentCommand{\qgb}{ m O{} }{\innerqgb(#1,#2)}
+\def\innerqgb(#1,#2,#3,#4){#1\bar #2_{#4}.~{#3}}
+\DeclareDocumentCommand{\fapp}{ O{f} m O{n} O{,} O{(} O{)}}{#1#5#2_1#4\dots #4#2_{#3}#6}
+\DeclareDocumentCommand{\fappint}{ O{f} m O{n} O{,}}{\innerfappint(#1,#2,#3,#4)}
+  \def\innerfappint(#1,#2,#3,#4,#5,#6){#1(#3#2_1#4#6\dots #6#3#2_{#5}#4)}
+\DeclareDocumentCommand{\bfapp}{ O{f} m O{}}{#1(\bar {#2}_{#3})}
+
+\DeclareDocumentCommand{\enum}{ O{n} m O{,} O{} O{1}}{#2_#5#4#3\dots #3#2_{#1}#4}
+\DeclareDocumentCommand{\benum}{ O{n} m O{\mapsto} O{} O{,\,} O{1}}{\innerbenum(#2,#3,#6,#4)#5\dots #5\innerbenum(#2,#3,#1,#4)}
+  \def\innerbenum(#1,#2,#3,#4,#5){#1_{#4}#5#3 {#2_{#4}}#5}
+
+\usepackage{soul,xcolor}
+
+\setstcolor{red}
+\makeatletter
+\newcommand\SoulColor{%
+  \let\set@color\beamerorig@set@color
+  \let\reset@color\beamerorig@reset@color}
+\makeatother
+
+\DeclareDocumentCommand{\soutthick}{ O{.4pt} m }{%
+    \renewcommand{\ULthickness}{#1}%
+       \sout{#2}%
+    \renewcommand{\ULthickness}{.4pt}% Resetting to ulem default
+}
+
+\definecolor{ao}{rgb}{0.0, 0.0, 1.0}
+\definecolor{ao(english)}{rgb}{0.0, 0.5, 0.0}
+\definecolor{asparagus}{rgb}{0.53, 0.66, 0.42}
+\definecolor{bostonuniversityred}{rgb}{0.8, 0.0, 0.0}
+\definecolor{darkbrown}{rgb}{0.4, 0.26, 0.13}
+\definecolor{alizarin}{rgb}{0.82, 0.1, 0.26}
+% 2952bfff
+\definecolor{ceruleanblue}{rgb}{0.16, 0.32, 0.75}
+% 8c008cff
+\definecolor{darkmagenta}{rgb}{0.55, 0.0, 0.55}
+% #8FBC8F
+\definecolor{darkseagreen}{rgb}{0.56, 0.74, 0.56}
+
+\usepackage{tikz-qtree}
+
+%%%%%%%%%%%%%%%% BEGIN define outline machinery
+
+\newcommand{\beamersec}[2]{%
+  \section*{#1}
+  \addcontentsline{toc}{section}{$\bullet$ #1 \vspace{10pt}\newline  \includegraphics[height=.3\textheight]{#2}\vfill}
+
+  \begin{frame}
+    \vfill
+    \begin{center}
+      \vfill\textbf{#1}\vfill
+      \includegraphics[height=.5\textheight]{#2}
+      \vfill
+    \end{center}
+    \vfill
+  \end{frame}
+}
+
+\newcommand{\beamersubsec}[1]{%
+  \subsection*{#1}
+  \addcontentsline{toc}{section}{$\mbox{}\quad-$ #1 \vspace{10pt}\newline\vfill}
+
+  \begin{frame}
+    \vfill
+    \begin{center}
+      \textbf{#1}
+    \end{center}
+    \vfill
+  \end{frame}
+}
+
+\newcommand{\beamersubsubsec}[1]{%
+  \subsection*{#1}
+  \addcontentsline{toc}{section}{$\mbox{}\qquad\cdot$ #1 \vspace{10pt}\newline\vfill}
+}
+
+%%%%%%%%%%%%%%%% END define outline machinery
+
+%%% BEGIN trick for not counting references
+
+\newcommand{\backupbegin}{
+   \newcounter{framenumberappendix}
+   \setcounter{framenumberappendix}{\value{framenumber}}
+}
+\newcommand{\backupend}{
+   \addtocounter{framenumberappendix}{-\value{framenumber}}
+   \addtocounter{framenumber}{\value{framenumberappendix}}
+}
+
+%%% END trick for not counting references
+
+\newcommand{\red}[1]{\textcolor{red}{#1}}
+
+% Creating boxes with width of given text; first parameter (optional) is
+% alignment of box, then text to be taken the width, then the text to be boxed
+\newlength\stextwidth
+\newcommand\makesamewidth[3][c]{%
+  \settowidth{\stextwidth}{#2}%
+  \makebox[\stextwidth][#1]{#3}%
+}
+
+% color highlight
+% f0dc9cff
+
+\AtBeginSection[]{
+  {
+    \setbeamertemplate{footline}{}
+  \begin{frame}
+  \vfill
+  \centering
+  \begin{beamercolorbox}[sep=8pt,center,shadow=true,rounded=true]{title}
+    \usebeamerfont{title}\insertsectionhead\par%
+  \end{beamercolorbox}
+  \vfill
+\end{frame}
+}
+\addtocounter{framenumber}{-1}
+}
+
+% Theorem settings
+\addtobeamertemplate{theorem begin}{%
+  \setbeamercolor{block title}{fg=white,bg=black}%
+  \setbeamercolor{block body}{fg=black, bg=white!90!black}%
+}{}
+
+%%% BEGIN CHANGING BULLETS STYLE
+
+\setbeamertemplate{itemize item}{$\vartriangleright$}
+\setbeamertemplate{itemize subitem}{$\blacktriangleright$}
+\newlength\origleftmargini
+\setlength\origleftmargini\leftmargini
+\newlength\origleftmarginii
+\setlength\origleftmarginii\leftmarginii
+\setlength\leftmargini{1em}
+\setlength\leftmarginii{1.25em}
+\setlength\leftmarginiii{1em}
+
+%%% END CHANGING BULLETS STYLE
+
+\setbeamersize{text margin left=1em, text margin right=1.5em}
+
+\newcommand{\yell}[1]{{\textcolor{red}{[#1]}}}
+
+\newcommand{\cvcc}{\textsc{cvc}{\small 4}\textsc{sy}\textsc{+b}\xspace}
+\newcommand{\cvca}{\textsc{cvc}{\small 4}\textsc{sy}\textsc{+u}\xspace}
+\newcommand{\gpid}{\textsc{GPiD}\xspace}
+\newcommand{\explain}{\textsc{Explain}\xspace}
+
+\newcommand{\mysetminusD}{\hbox{\tikz{\draw[line width=0.6pt,line cap=round] (3pt,0) -- (0,6pt);}}}
+\newcommand{\mysetminusT}{\mysetminusD}
+\newcommand{\mysetminusS}{\hbox{\tikz{\draw[line width=0.45pt,line cap=round] (2pt,0) -- (0,4pt);}}}
+\newcommand{\mysetminusSS}{\hbox{\tikz{\draw[line width=0.4pt,line cap=round] (1.5pt,0) -- (0,3pt);}}}
+
+\newcommand{\mysetminus}{\mathbin{\mathchoice{\mysetminusD}{\mysetminusT}{\mysetminusS}{\mysetminusSS}}}
+
+\def\vv{\smallskip}
+
+\newcommand{\sep}{~\mid~}
+
+\begin{document}
+
+{
+\setbeamertemplate{footline}{}
+\frame{\titlepage}
+}
+\addtocounter{framenumber}{-1}
+
+\begin{frame}[plain,allowframebreaks]{References}
+\printbibliography
+\end{frame}
+
+\end{document}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:
