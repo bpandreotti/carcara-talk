@@ -488,6 +488,45 @@ proofs in the Alethe format}
 }
 \addtocounter{framenumber}{-1}
 
+\begin{frame}
+  \frametitle{SMT solvers and trust}
+  \begin{itemize}
+    \vitem SMT solvers are crucial tools in many formal methods applications,
+    like proof assistants and program verification
+    \vitem However, these solvers often have large and complex codebases, which
+    make detecting bugs difficult
+    \begin{itemize}
+      \item Correctness bugs are often found in widely used SMT solvers, and
+      every year SMT-COMP uncovers disagreements between solvers
+    \end{itemize}
+    \vitem Then, how can we trust the correctness of their results?
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Why certifying the solvers is not feasible}
+  \begin{itemize}
+    \vitem One possibility would be to certify the solver
+    \vitem ...but their large, complex code bases would be too costly to certify
+    \vitem ...and simplifying the system so it's easier to certify would mean
+    compromising on performance
+    \vitem Furthermore, certifying a system freezes it, slowing down the
+    addition of new features and improvements
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{SMT proofs}
+  \begin{itemize}
+    \vitem Instead, the SMT sovler can produce a proof!
+    \vitem An SMT proof is a certificate of the solver results, that formally
+    justifies the logical resoning it used to find a solution
+    \vitem Proofs can be checked independently, decoupling the confidence in the
+    solvers results from the solver's implementation
+    \vitem Checking is usually simpler and quicker than solving
+  \end{itemize}
+\end{frame}
+
 \begin{frame}[plain,allowframebreaks]{References}
 \printbibliography
 \end{frame}
