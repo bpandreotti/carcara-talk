@@ -1,3 +1,4 @@
+_minted-talk/
 auto/
 talk-blx.bib
 talk.aux
@@ -13,4 +14,5 @@ talk.run.xml
 talk.snm
 talk.synctex.gz
 talk.toc
+talk.vrb
 talk.xdv
