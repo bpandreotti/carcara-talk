@@ -496,7 +496,7 @@ proofs in the Alethe format}
     \vitem SMT solvers are crucial tools in many formal methods applications,
     like proof assistants and program verification
     \vitem However, these solvers often have large and complex codebases, which
-    make detecting bugs difficult
+    makes detecting bugs difficult
     \begin{itemize}
       \item Correctness bugs are often found in widely used SMT solvers, and
       every year SMT-COMP uncovers disagreements between solvers
@@ -594,6 +594,65 @@ proofs in the Alethe format}
     \vitem While this approach does not offer the trust that reconstruction in
     proof assistants offers, it has other advantages
   \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Introducing Carcara}
+  \begin{itemize}
+    \vitem Aside from proof checking, Carcara also has support for \emph{proof
+    elaboration}
+    \vitem This is the process in which more details are added to a
+    coarse-grained proof, in order to make it finer-grained and thus easier to
+    check
+    \vitem We believe this elaboration might be useful as an intermediary step
+    between solvers and proof assistants
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Introducing Carcara}
+  \centering
+  \includegraphics[height=0.8\textheight]{images/architecture.png}
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{Checking Alethe proofs}
+  \begin{minipage}{0.49 \textwidth}
+  \begin{itemize}
+    \vitem The first step in checking an Alethe proof is parsing it
+    \vspace{2ex}
+    \vitem Carcara makes use of \textit{hash consing} to ensure maximal sharing
+    when parsing terms
+    \vspace{2ex}
+    \vitem After parsing, the proof is represented internally by an array of
+    proof commands, which can be either \texttt{assume} or \texttt{step}
+    commands, or a subproof
+  \end{itemize}
+  \end{minipage}
+  \begin{minipage}{0.5 \textwidth}
+    \vspace{-.35ex}
+    \begin{minted}[fontsize=\footnotesize, frame=single]{javascript}
+Proof [
+  Assume {
+    id: "h1",
+    term: (forall ((x Int)) (> x 0)),
+  },
+  Assume {
+    id: "h2",
+    term: (not (forall ((y Int)) (> y 0))),
+  },
+  Subproof {
+    args: [(y Int), (:= x y)]
+    commands: [
+      Step {
+        id: "t3.t1",
+        clause: [(= x y)],
+        rule: "refl",
+        premises: [],
+      },
+  ...
+    \end{minted}
+  \end{minipage}
 \end{frame}
 
 \begin{frame}[plain,allowframebreaks]{References}
