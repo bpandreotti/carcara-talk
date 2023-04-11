@@ -11,6 +11,8 @@
 \usepackage{subcaption}
 \usepackage{bussproofs}
 \usepackage{mathpartir}
+\usepackage{minted}
+\usemintedstyle{trac}
 
 \usepackage{tikz}
 
@@ -524,6 +526,73 @@ proofs in the Alethe format}
     \vitem Proofs can be checked independently, decoupling the confidence in the
     solvers results from the solver's implementation
     \vitem Checking is usually simpler and quicker than solving
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Alethe format}
+  \begin{itemize}
+    \vitem While in general SMT solvers use specific proof formats, Alethe is
+    a new SMT proof format that aims to be usable by many different solvers
+    \begin{itemize}
+      \item It is currently supported by the veriT and cvc5 SMT solvers
+    \end{itemize}
+    \vitem In order to facilitate proof production, Alethe uses a term language
+    that directly extends SMT-LIB
+    \vitem Also to that end, Alethe provides rules with varying levels of
+    granularity
+    \vitem This allows solvers to rely on powerful checkers and produce
+    coarse-grained proofs (which are easier to produce), while also allowing
+    solvers to take the effort to produce more fine-grained proofs (which are
+    easier to check)
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{Example}
+  \centering
+\begin{minted}[fontsize=\footnotesize, frame=single]{smtlib2.py -x}
+(set-logic LIA)
+(assert (forall ((x Int)) (> x 0)))
+(assert (not (forall ((y Int)) (> y 0))))
+(check-sat)
+\end{minted}
+\begin{minted}[fontsize=\footnotesize, frame=single]{smtlib2.py -x}
+(assume h1 (forall ((x Int)) (> x 0)))
+(assume h2 (not (forall ((y Int)) (> y 0))))
+(anchor :step t3 :args ((y Int) (:= x y)))
+(step t3.t1 (cl (= x y)) :rule refl)
+(step t3.t2 (cl (= (> x 0) (> y 0))) :rule cong :premises (t3.t1))
+(step t3 (cl (= (forall ((x Int)) (> x 0)) (forall ((y Int)) (> y 0))))
+  :rule bind)
+(step t4 (cl (not (forall ((x Int)) (> x 0))) (forall ((y Int)) (> y 0)))
+  :rule equiv1 :premises (t3))
+(step t5 (cl) :rule resolution :premises (t4 h1 h2))
+\end{minted}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Related work}
+  \begin{itemize}
+    \vitem Checking of Alethe proofs has already been accomplished via
+    reconstruction in proof assistants.
+    \vitem However, this approach has many limitations
+    \begin{itemize}
+      \item Performance
+      \item Usability
+    \end{itemize}
+    \vitem Carcara aims to offer an alternative to these solutions
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Introducing Carcara}
+  \begin{itemize}
+    \vitem Carcara is an efficient and independent proof checker for Alethe
+    proofs
+    \vitem It is written in a high performance language, Rust
+    \vitem While this approach does not offer the trust that reconstruction in
+    proof assistants offers, it has other advantages
   \end{itemize}
 \end{frame}
 
