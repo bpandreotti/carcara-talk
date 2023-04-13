@@ -548,24 +548,86 @@ proofs in the Alethe format}
   \end{itemize}
 \end{frame}
 
+\begin{frame}
+  \frametitle{Example}
+  $$(\forall x \;.\; x \geq 0) \land \neg (\forall y \;.\; y \geq 0)$$
+\end{frame}
+\addtocounter{framenumber}{-1}
+
+\begin{frame}
+  \frametitle{Example}
+  $$(\forall x \;.\; x \geq 0) \land \neg (\forall y \;.\; y \geq 0)$$
+  \vfill
+  \begin{prooftree}
+    \AxiomC{}
+    \RightLabel{\footnotesize\texttt{assume}}
+    \UnaryInfC{$(\forall x \;.\; x \geq 0)$}
+    \AxiomC{}
+    \RightLabel{\footnotesize\texttt{assume}}
+    \UnaryInfC{$\neg(\forall y \;.\; y \geq 0)$}
+    \AxiomC{}
+    \RightLabel{\footnotesize\texttt{refl}}
+    \UnaryInfC{$x \mapsto y \vartriangleright\, x = y$}
+    \RightLabel{\footnotesize\texttt{cong}}
+    \UnaryInfC{$x \mapsto y \vartriangleright\, (x \geq 0) = (y \geq 0)$}
+    \RightLabel{\footnotesize\texttt{bind}}
+    \UnaryInfC{$(\forall x \;.\; x \geq 0) = (\forall y \;.\; y \geq 0)$}
+    \RightLabel{\footnotesize\texttt{equiv1}}
+    \UnaryInfC{$\neg (\forall x \;.\; x \geq 0) \lor (\forall y \;.\; y \geq 0)$}
+    \RightLabel{\footnotesize\texttt{resolution}}
+    \TrinaryInfC{$\bot$}
+  \end{prooftree}
+\end{frame}
+\addtocounter{framenumber}{-1}
+
+\begin{frame}[fragile]
+  \frametitle{Example}
+\begin{minted}[fontsize=\footnotesize, frame=single]{smtlib2.py -x}
+(set-logic LIA)
+(assert (forall ((x Int)) (>= x 0)))
+(assert (not (forall ((y Int)) (>= y 0))))
+(check-sat)
+\end{minted}
+  \begin{prooftree}
+    \AxiomC{}
+    \RightLabel{\footnotesize\texttt{assume}}
+    \UnaryInfC{$(\forall x \;.\; x \geq 0)$}
+    \AxiomC{}
+    \RightLabel{\footnotesize\texttt{assume}}
+    \UnaryInfC{$\neg(\forall y \;.\; y \geq 0)$}
+    \AxiomC{}
+    \RightLabel{\footnotesize\texttt{refl}}
+    \UnaryInfC{$x \mapsto y \vartriangleright\, x = y$}
+    \RightLabel{\footnotesize\texttt{cong}}
+    \UnaryInfC{$x \mapsto y \vartriangleright\, (x \geq 0) = (y \geq 0)$}
+    \RightLabel{\footnotesize\texttt{bind}}
+    \UnaryInfC{$(\forall x \;.\; x \geq 0) = (\forall y \;.\; y \geq 0)$}
+    \RightLabel{\footnotesize\texttt{equiv1}}
+    \UnaryInfC{$\neg (\forall x \;.\; x \geq 0) \lor (\forall y \;.\; y \geq 0)$}
+    \RightLabel{\footnotesize\texttt{resolution}}
+    \TrinaryInfC{$\bot$}
+  \end{prooftree}
+\end{frame}
+\addtocounter{framenumber}{-1}
+
 \begin{frame}[fragile]
   \frametitle{Example}
   \centering
 \begin{minted}[fontsize=\footnotesize, frame=single]{smtlib2.py -x}
 (set-logic LIA)
-(assert (forall ((x Int)) (> x 0)))
-(assert (not (forall ((y Int)) (> y 0))))
+(assert (forall ((x Int)) (>= x 0)))
+(assert (not (forall ((y Int)) (>= y 0))))
 (check-sat)
 \end{minted}
 \begin{minted}[fontsize=\footnotesize, frame=single]{smtlib2.py -x}
-(assume h1 (forall ((x Int)) (> x 0)))
-(assume h2 (not (forall ((y Int)) (> y 0))))
+(assume h1 (forall ((x Int)) (>= x 0)))
+(assume h2 (not (forall ((y Int)) (>= y 0))))
 (anchor :step t3 :args ((y Int) (:= x y)))
 (step t3.t1 (cl (= x y)) :rule refl)
-(step t3.t2 (cl (= (> x 0) (> y 0))) :rule cong :premises (t3.t1))
-(step t3 (cl (= (forall ((x Int)) (> x 0)) (forall ((y Int)) (> y 0))))
+(step t3.t2 (cl (= (>= x 0) (>= y 0))) :rule cong :premises (t3.t1))
+(step t3 (cl (= (forall ((x Int)) (>= x 0)) (forall ((y Int)) (>= y 0))))
   :rule bind)
-(step t4 (cl (not (forall ((x Int)) (> x 0))) (forall ((y Int)) (> y 0)))
+(step t4 (cl (not (forall ((x Int)) (>= x 0))) (forall ((y Int)) (>= y 0)))
   :rule equiv1 :premises (t3))
 (step t5 (cl) :rule resolution :premises (t4 h1 h2))
 \end{minted}
