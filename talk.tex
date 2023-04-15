@@ -718,6 +718,55 @@ Proof [
   \end{minipage}
 \end{frame}
 
+\begin{frame}
+  \frametitle{Checking Alethe proofs}
+  \begin{itemize}
+    \vitem A checking procedure had to be implemented for each of the 90 rules
+    currently in the Alethe format
+    \vitem The presence of coarse-grained proof steps makes checking difficult
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Checking \textit{assume} commands}
+  \begin{itemize}
+    \vitem During parsing, the problem's assumptions are stored in a hash set
+    \vitem In general, checking an \textit{assume} command amounts to accessing
+    that hash set
+    \vitem However, the solver may implicit reorder equalities when producing a
+    proof
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{Checking \textit{assume} commands}
+  \begin{minipage}{0.54 \textwidth}
+    \begin{itemize}
+      \vitem An \texttt{assume} command may reference a problem premise while
+      implicitly reordering an equality inside it
+      \vspace{4ex}
+      \vitem In this case, the checker must iterate through all the premises to
+      find the correct one
+    \end{itemize}
+  \end{minipage}
+  \begin{minipage}{0.45 \textwidth}
+    \begin{minted}[fontsize=\footnotesize, frame=single, escapeinside=||]{smtlib2.py -x}
+(set-logic QF_UF)
+(declare-const a Bool)
+(declare-const b Bool)
+(assert (= a b))
+(assert |\colorbox{yellow}{(not (= b a))}|)
+(check-sat)
+    \end{minted}
+    \begin{minted}[fontsize=\footnotesize, frame=single, escapeinside=||]{smtlib2.py -x}
+(assume h1 (= a b))
+(assume h2 |\colorbox{yellow}{(not (= a b))}|)
+(step t3 (cl) :rule resolution
+    :premises (h1 h2))
+    \end{minted}
+  \end{minipage}
+\end{frame}
+
 \begin{frame}[plain,allowframebreaks]{References}
 \printbibliography
 \end{frame}
