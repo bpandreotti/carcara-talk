@@ -681,6 +681,8 @@ proofs in the Alethe format}
   \includegraphics[height=0.8\textheight]{images/architecture.png}
 \end{frame}
 
+\section{Checking}
+
 \begin{frame}[fragile]
   \frametitle{Checking Alethe proofs}
   \begin{minipage}{0.49 \textwidth}
@@ -835,6 +837,86 @@ proofs in the Alethe format}
     which is an NP-Hard problem
     \vitem Instead, occurences of this rule are not checked, and are considered
     holes by Carcara
+  \end{itemize}
+\end{frame}
+
+\section{Elaboration}
+
+\begin{frame}
+  \frametitle{Proof elaboration}
+  \begin{itemize}
+    \vitem There are many rules in Alethe which allow very coarse-grained steps
+    \vitem By breaking them down into smaller, finer-grained steps, we can
+    produce a proof that is easier to check and contains less holes
+    \vitem Carcara implements elaboration procedures for a few important rules
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{A motivating example: transitivity}
+  \begin{itemize}
+    \vitem In Alethe, \texttt{eq\_transitive} is one of the rules that reasons
+    about the transitivity of equality
+    \vitem In general, a step of this rule looks like this:
+    \begin{minted}[autogobble, fontsize=\footnotesize, frame=single]{smtlib2.py -x}
+      (step t1 (cl (not (= a b)) (not (= b c)) (not (= c d)) (= a d)) :rule eq_transitive)
+    \end{minted}
+    \vitem In a more natural notation, it introduces the tautology:
+    $$(a \neq b) \lor (b \neq c) \lor (c \neq d) \lor (a = d)$$
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{A motivating example: transitivity}
+  \begin{itemize}
+    \vitem However, the specification of this rule is very permissive
+    \begin{itemize}
+      \item The order of the transitive chain may be shuffled
+      \item Each negated equality may also be flipped
+    \end{itemize}
+    \vitem Therefore, the following is also a valid \texttt{eq\_transitive}
+    step:
+    \begin{minted}[autogobble, fontsize=\footnotesize, frame=single]{smtlib2.py -x}
+      (step t1 (cl (not (= b a)) (not (= c d)) (not (= c b)) (= a d)) :rule eq_transitive)
+    \end{minted}
+    \vitem This means that checking \texttt{eq\_transitive} is in general quadratic on
+    the length of the clause (instead of linear)
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Elaborating \texttt{eq\_transitive}}
+  \begin{itemize}
+    \vitem A possible elaboration procedure for \texttt{eq\_transitive} might
+    change the clause to ``unshuffle'' the transitive chain, and ``unflip'' the
+    needed equalities
+    \vitem However, steps later in the proof may refer to the
+    \texttt{eq\_transitive} step as premise, so we can't just change the
+    conclusion caluse
+    \vitem Instead, we must also add  steps that reconstruct the original
+    clause, so that it can still be referenced further down in the proof
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{Elaborating \texttt{eq\_transitive}}
+  \begin{itemize}
+    \vitem Here is an example \texttt{eq\_transitive} step:
+    \begin{minted}[autogobble, fontsize=\footnotesize, frame=single]{smtlib2.py -x}
+      (step t1 (cl (not (= b a)) (not (= c d)) (not (= c b)) (= a d)) :rule eq_transitive)
+    \end{minted}
+    \vitem ...and here is its elaboration:
+    \begin{minted}[autogobble, fontsize=\footnotesize, frame=single]{smtlib2.py -x}
+      (step t1.t1 (cl (not (= a b)) (not (= b c)) (not (= c d)) (= a d)) :rule eq_transitive)
+      (step t1.t2 (cl (not (= b a)) (= a b)) :rule eq_symmetric)
+      (step t1.t3 (cl (not (= c b)) (= b c)) :rule eq_symmetric)
+      (step t1.t4 (cl (not (= c d)) (= a d) (not (= b a)) (not (= c b)))
+        :rule resolution :premises (t1.t1 t1.t2 t1.t3))
+      (step t1 (cl (not (= b a)) (not (= c d)) (not (= c b)) (= a d))
+        :rule reordering :premises (t1.t4))
+    \end{minted}
+    \vitem The new \texttt{eq\_transitive} step, \texttt{t1.t1}, is now easy to
+    check, and the stesp \texttt{t1} still has the same conclusion clause
   \end{itemize}
 \end{frame}
 
