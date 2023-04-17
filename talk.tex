@@ -952,6 +952,48 @@ proofs in the Alethe format}
 \end{frame}
 
 \begin{frame}
+  \frametitle{Removing the implicit reordering of equalities}
+  \begin{itemize}
+    \item As was mentioned earlier, SMT solvers may implicitly reorder
+    equalities when producing Alethe proofs
+    \vitem This makes checking more complicated and less efficient
+    \vitem An elaboration procedure was also developed to remove this implicit
+    transformation
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{Removing the implicit reordering of equalities}
+  \begin{itemize}
+    \item For example, consider the following SMT problem, and its corresponding
+    proof:
+    \vfill
+    \begin{minipage}{0.35 \textwidth}
+      \begin{minted}[autogobble, fontsize=\footnotesize, frame=single]{smtlib2.py -x}
+        (set-logic QF_UF)
+        (declare-const a Bool)
+        (declare-const b Bool)
+        (assert (= a b))
+        (assert (not (= b a)))
+        (check-sat)
+      \end{minted}
+    \end{minipage}
+    \hfill
+    \begin{minipage}[b]{0.58 \textwidth}
+      \begin{minted}[autogobble, fontsize=\footnotesize, frame=single]{smtlib2.py -x}
+        (assume h1 (= a b))
+        (assume h2 (not (= a b)))
+        (step t3 (cl) :rule resolution :premises (h1 h2))
+      \end{minted}
+    \end{minipage}
+    \vitem The proof would be simpler to check if \texttt{h2} was instead
+    \texttt{(assume h2 (not (= b a)))}
+    \vitem But \texttt{t3} uses \texttt{h2} as a premise, so we can't just
+    change it
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
   \frametitle{Future Work}
   \begin{itemize}
     \item Parallelization of proof checking
