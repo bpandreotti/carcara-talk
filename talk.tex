@@ -1018,6 +1018,77 @@ proofs in the Alethe format}
   \end{itemize}
 \end{frame}
 
+\section{Evaluation}
+
+\begin{frame}
+  \frametitle{Experimental setup}
+  \begin{itemize}
+    \item We used the veriT SMT solver to generate Alethe proofs from all
+    problems in the SMT-LIB benchmark library
+    \vitem This resulted in a 92 GB set of 39,229 proofs
+    \vitem Most proofs are small (under 1 MB), but some can be very large
+    \begin{itemize}
+      \item 14 proofs are over 1 GB, and the largest has 4.5 GB
+    \end{itemize}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Proof checking}
+  \begin{itemize}
+    \item We used Carcara to check all proofs in the benchmark set
+    \vitem 378 proofs had checking failures, but they were all due to incorrect
+    steps caused by bugs in the solver
+    \vitem In aggregate, checking was 4.69 times faster than solving
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Proof checking}
+  \centering
+  \footnotesize
+  \begin{tabular}{lr@{\hskip 3ex}r@{\hskip 3ex}r@{\hskip 3ex}r}
+      \toprule
+      \textbf{Logic} & \textbf{Problems} & \textbf{Solving time (s)} &
+          \textbf{Checking time (s)} & \textbf{Ratio} \\ \midrule
+      QF\_LIA & 1018 & 5975.36 & 742.73 & 8.05 \\
+      QF\_UF & 4180 & 3857.34 & 1881.55 & 2.05 \\
+      QF\_LRA & 537 & 3629.39 & 258.60 & 14.03 \\
+      UFLIA & 7221 & 3547.78 & 136.21 & 26.05 \\
+      QF\_IDL & 609 & 3316.08 & 2240.10 & 1.48 \\
+      UF & 2885 & 2858.14 & 30.95 & 92.35 \\
+      QF\_UFLIA & 167 & 1194.51 & 4.70 & 254.41 \\
+      AUFLIA & 2135 & 1094.67 & 12.51 & 87.53 \\
+      QF\_RDL & 81 & 620.46 & 123.14 & 5.04 \\
+      QF\_UFIDL & 66 & 396.74 & 87.58 & 4.53 \\
+      AUFLIRA & 19200 & 248.95 & 144.03 & 1.73 \\
+      QF\_UFLRA & 415 & 141.82 & 65.14 & 2.18 \\
+      ... \\
+      \midrule
+      Total: & 38851 & 26882.93 & 5729.39 & 4.69 \\
+    \bottomrule
+  \end{tabular}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Proof checking}
+  \begin{minipage}{0.64 \textwidth}
+    \centering
+    \includegraphics[height=0.9\textheight]{images/by-rules-boxplot.png}
+  \end{minipage}
+  \hfill
+  \begin{minipage}[c][0.8 \textheight]{0.3 \textwidth}
+    \begin{itemize}
+      \item \texttt{resolution} and \texttt{refl} are simple to check, but very
+      frequent
+      \vitem \texttt{la\_generic} and \texttt{ac\_simp} are much less frequent,
+      but checking them is more expensive
+      \vitem Note how \texttt{assume} has some very expensive worst cases
+      \vfill
+    \end{itemize}
+  \end{minipage}
+\end{frame}
+
 \begin{frame}
   \frametitle{Future Work}
   \begin{itemize}
