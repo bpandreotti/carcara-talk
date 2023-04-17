@@ -822,6 +822,23 @@ Proof [
   \end{align*}
 \end{frame}
 
+\begin{frame}[fragile]
+  \frametitle{Checking linear arithmetic steps}
+  \begin{itemize}
+    \vitem The \texttt{lia\_generic} rule is very similar to
+    \texttt{la\_generic}, but it does not provide the coefficients as arguments:
+    \begin{minted}[fontsize=\footnotesize, frame=single]{smtlib2.py -x}
+(step t1
+  (cl (<= (- x) 1) (<= (+ (* 2 x) (* (- 3) y)) 2) (<= y (- 1)))
+  :rule lia_generic)
+    \end{minted}
+    \vitem In this case, the checker would need to search for the coefficients,
+    which an NP-Hard problem
+    \vitem Instead, occurences of this rule are not checked, and are considered
+    holes by Carcara
+  \end{itemize}
+\end{frame}
+
 \begin{frame}[plain,allowframebreaks]{References}
 \printbibliography
 \end{frame}
