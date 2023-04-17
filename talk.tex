@@ -767,6 +767,61 @@ Proof [
   \end{minipage}
 \end{frame}
 
+\begin{frame}[fragile]
+  \frametitle{Checking linear arithmetic steps}
+  \begin{itemize}
+    \vitem The \texttt{la\_generic} rule models linear arithmetic reasoning
+    \vitem For example, consider this \texttt{la\_generic} step:
+  \begin{minted}[fontsize=\footnotesize, frame=single]{smtlib2.py -x}
+(step t1
+  (cl (<= (- x) 1) (<= (+ (* 2 x) (* (- 3) y)) 2) (<= y (- 1)))
+  :rule la_generic :args (2 1 3))
+  \end{minted}
+  \vitem It introduces the following tautology:
+  $$(-x \leq 1) \lor (2x - 3y \leq 2) \lor (y \leq -1)$$
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[t, fragile]
+  \frametitle{Checking linear arithmetic steps}
+  \begin{minted}[fontsize=\footnotesize, frame=single]{smtlib2.py -x}
+(step t1
+  (cl (<= (- x) 1) (<= (+ (* 2 x) (* (- 3) y)) 2) (<= y (- 1)))
+  :rule la_generic :args (2 1 3))
+  \end{minted}
+  \begin{itemize}
+    \vitem Checking that this clause is true is equivalent to proving that its
+    negation, the following three inequalites, are contradictory
+  \end{itemize}
+
+  \begin{align*}
+    -x &> 1\tag{a}\\
+    2x - 3y &> 2\tag{b}\\
+    y &> -1\tag{c}
+  \end{align*}
+\end{frame}
+\addtocounter{framenumber}{-1}
+\begin{frame}[t, fragile]
+  \frametitle{Checking linear arithmetic steps}
+  \begin{minted}[fontsize=\footnotesize, frame=single, escapeinside=||]{smtlib2.py -x}
+(step t1
+  (cl (<= (- x) 1) (<= (+ (* 2 x) (* (- 3) y)) 2) (<= y (- 1)))
+  :rule la_generic |\colorbox{yellow}{:args (2 1 3)}|)
+  \end{minted}
+  \begin{itemize}
+    \vitem Since \texttt{la\_generic} steps provide the needed coefficients as
+    arguments, checking them is simple
+    \vitem Computing $2 \cdot (a) + 1 \cdot (b) + 3 \cdot (c)$, we get $0 > 1$,
+    so the step must be true
+  \end{itemize}
+
+  \begin{align*}
+    -x &> 1\tag{a}\\
+    2x - 3y &> 2\tag{b}\\
+    y &> -1\tag{c}
+  \end{align*}
+\end{frame}
+
 \begin{frame}[plain,allowframebreaks]{References}
 \printbibliography
 \end{frame}
