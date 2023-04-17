@@ -725,31 +725,64 @@ proofs in the Alethe format}
     \item A checking procedure had to be implemented for each of the 90 rules
     currently in the Alethe format
     \vitem The presence of coarse-grained proof steps makes checking difficult
+    \vitem We will take a detailed look into what are some of the challenges in
+    checking Alethe proofs
   \end{itemize}
 \end{frame}
 
 \begin{frame}
   \frametitle{Checking \textit{assume} commands}
   \begin{itemize}
-    \item During parsing, the problem's assumptions are stored in a hash set
+    \item An \texttt{assume} command must contain a term introduced in one of the
+    original problem's \texttt{assert}s
+    \vitem During parsing, the problem's assumptions are stored in a hash set
     \vitem In general, checking an \textit{assume} command amounts to accessing
     that hash set
-    \vitem However, the solver may implicit reorder equalities when producing a
-    proof
   \end{itemize}
 \end{frame}
 
 \begin{frame}[fragile]
   \frametitle{Checking \textit{assume} commands}
-  \begin{minipage}[c][0.45 \textheight]{0.54 \textwidth}
+  \begin{minipage}[c][0.45 \textheight]{0.55 \textwidth}
     \begin{itemize}
-      \item An \texttt{assume} command may reference a problem premise while
-      implicitly reordering an equality inside it
-      \vitem In this case, the checker must iterate through all the premises to
-      find the correct one
+      \item However, the solver may implicitly reorder equalities when producing
+      a proof
+      \vitem This means an \texttt{assume} command may reference a problem premise
+      while implicitly reordering an equality inside it
     \end{itemize}
   \end{minipage}
-  \begin{minipage}{0.45 \textwidth}
+  \hfill
+  \begin{minipage}{0.4 \textwidth}
+    \begin{minted}[autogobble, fontsize=\footnotesize, frame=single, escapeinside=||]{smtlib2.py -x}
+      (set-logic QF_UF)
+      (declare-const a Bool)
+      (declare-const b Bool)
+      (assert (= a b))
+      (assert |\colorbox{yellow}{(not (= b a))}|)
+      (check-sat)
+    \end{minted}
+    \begin{minted}[autogobble, fontsize=\footnotesize, frame=single, escapeinside=||]{smtlib2.py -x}
+      (assume h1 (= a b))
+      (assume h2 |\colorbox{yellow}{(not (= a b))}|)
+      (step t3 (cl) :rule resolution
+          :premises (h1 h2))
+    \end{minted}
+  \end{minipage}
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{Checking \textit{assume} commands}
+  \begin{minipage}[c][0.55 \textheight]{0.55 \textwidth}
+    \begin{itemize}
+      \item In this case, the checker must iterate through all the premises and
+      see if they are equal to the \texttt{assume} term, modulo the reordering
+      of equalities
+      \vitem This requires traversing the terms, possibly up to their depth
+      \vitem We call this equality check a \textit{Polyequal} check
+    \end{itemize}
+  \end{minipage}
+  \hfill
+  \begin{minipage}{0.4 \textwidth}
     \begin{minted}[autogobble, fontsize=\footnotesize, frame=single, escapeinside=||]{smtlib2.py -x}
       (set-logic QF_UF)
       (declare-const a Bool)
