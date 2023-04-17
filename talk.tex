@@ -967,8 +967,7 @@ proofs in the Alethe format}
   \begin{itemize}
     \item For example, consider the following SMT problem, and its corresponding
     proof:
-    \vfill
-    \begin{minipage}{0.35 \textwidth}
+    \begin{minipage}[t]{0.35 \textwidth}
       \begin{minted}[autogobble, fontsize=\footnotesize, frame=single]{smtlib2.py -x}
         (set-logic QF_UF)
         (declare-const a Bool)
@@ -979,7 +978,7 @@ proofs in the Alethe format}
       \end{minted}
     \end{minipage}
     \hfill
-    \begin{minipage}[b]{0.58 \textwidth}
+    \begin{minipage}[t]{0.6 \textwidth}
       \begin{minted}[autogobble, fontsize=\footnotesize, frame=single]{smtlib2.py -x}
         (assume h1 (= a b))
         (assume h2 (not (= a b)))
@@ -989,7 +988,33 @@ proofs in the Alethe format}
     \vitem The proof would be simpler to check if \texttt{h2} was instead
     \texttt{(assume h2 (not (= b a)))}
     \vitem But \texttt{t3} uses \texttt{h2} as a premise, so we can't just
-    change it
+    change it --- like before, we also need to reconstruct the original
+    conclusion
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{Removing the implicit reordering of equalities}
+  \begin{itemize}
+    \begin{minted}[autogobble, fontsize=\footnotesize, frame=single]{smtlib2.py -x}
+      (assume h1 (= a b))
+      (assume h2 (not (= a b)))
+      (step t3 (cl) :rule resolution :premises (h1 h2))
+    \end{minted}
+    \vitem This is the correct elaboration of the proof:
+    \begin{minted}[autogobble, fontsize=\footnotesize, frame=single]{smtlib2.py -x}
+      (assume h1 (= a b))
+      (assume h2 (not (= b a)))
+      (step h2.t1 (cl (= (= b a) (= a b))) :rule equiv_simplify)
+      (step h2.t2 (cl (= (not (= b a)) (not (= a b)))) :rule cong :premises (h2.t1))
+      (step h2.t3 (cl (not (not (= b a))) (not (= a b))) :rule equiv1 :premises (h2.t2))
+      (step h2.t4 (cl (not (= a b))) :rule resolution :premises (h2 h2.t3))
+      (step t3 (cl) :rule resolution :premises (h1 h2.t4))
+    \end{minted}
+    \vitem Now \texttt{h2} refers to the premise as it appeared in the original
+    problem, and the added steps reconstruct the original \texttt{h2} conclusion
+    \vitem The step \texttt{t3}, that used to reference \texttt{h2}, now
+    references \texttt{h2.t4}
   \end{itemize}
 \end{frame}
 
