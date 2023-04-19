@@ -482,6 +482,10 @@ proofs in the Alethe format}
 
 \newcommand{\sep}{~\mid~}
 
+\makeatletter
+\newcommand\notsotiny{\@setfontsize\notsotiny{7}{8}}
+\makeatother
+
 \begin{document}
 
 {
@@ -1117,29 +1121,38 @@ proofs in the Alethe format}
 
 \begin{frame}
   \frametitle{Proof checking}
-  \centering
-  \footnotesize
-  \begin{tabular}{lr@{\hskip 3ex}r@{\hskip 3ex}r@{\hskip 3ex}r}
+  \begin{minipage}{0.31 \textwidth}
+    \includegraphics[height=0.75 \textheight]{images/solving-checking.png}
+    \hfill
+  \end{minipage}
+  \begin{minipage}{0.68 \textwidth}
+    \hfill
+    \notsotiny
+    \begin{tabular}{l|r|r|r|r}
       \toprule
-      \textbf{Logic} & \textbf{Problems} & \textbf{Solving time (s)} &
-          \textbf{Checking time (s)} & \textbf{Ratio} \\ \midrule
-      QF\_LIA & 1018 & 5975.36 & 742.73 & 8.05 \\
-      QF\_UF & 4180 & 3857.34 & 1881.55 & 2.05 \\
-      QF\_LRA & 537 & 3629.39 & 258.60 & 14.03 \\
-      UFLIA & 7221 & 3547.78 & 136.21 & 26.05 \\
-      QF\_IDL & 609 & 3316.08 & 2240.10 & 1.48 \\
-      UF & 2885 & 2858.14 & 30.95 & 92.35 \\
-      QF\_UFLIA & 167 & 1194.51 & 4.70 & 254.41 \\
-      AUFLIA & 2135 & 1094.67 & 12.51 & 87.53 \\
-      QF\_RDL & 81 & 620.46 & 123.14 & 5.04 \\
-      QF\_UFIDL & 66 & 396.74 & 87.58 & 4.53 \\
-      AUFLIRA & 19200 & 248.95 & 144.03 & 1.73 \\
-      QF\_UFLRA & 415 & 141.82 & 65.14 & 2.18 \\
-      ... \\
+      \textbf{Logic} & \textbf{Problems} & \textbf{Solving (s)} &
+          \textbf{Checking (s)} & \textbf{Ratio} \\ \midrule
+      QF\_LIA & 1018 & 5975 & 742 & 8.05 \\
+      QF\_UF & 4180 & 3857 & 1881 & 2.05 \\
+      QF\_LRA & 537 & 3629 & 258 & 14.03 \\
+      UFLIA & 7221 & 3547 & 136 & 26.05 \\
+      QF\_IDL & 609 & 3316 & 2240 & 1.48 \\
+      UF & 2885 & 2858 & 30 & 92.35 \\
+      QF\_UFLIA & 167 & 1194 & 4 & 254.41 \\
+      AUFLIA & 2135 & 1094 & 12 & 87.53 \\
+      QF\_RDL & 81 & 620 & 123 & 5.04 \\
+      QF\_UFIDL & 66 & 396 & 87 & 4.53 \\
+      AUFLIRA & 19200 & 248 & 144 & 1.73 \\
+      QF\_UFLRA & 415 & 141 & 65 & 2.18 \\
+      QF\_ALIA & 16 & 0.79 & 1.39 & 0.57 \\
+      UFIDL & 55 & 0.54 & 0.66 & 0.82 \\
+      QF\_AUFLIA & 256 & 0.34 & 0.11 & 3.04 \\
+      UFLRA & 10 & 0.02 & 0.01 & 3.05 \\
       \midrule
       Total: & 38851 & 26882.93 & 5729.39 & 4.69 \\
-    \bottomrule
-  \end{tabular}
+      \bottomrule
+    \end{tabular}
+  \end{minipage}
 \end{frame}
 
 \begin{frame}
