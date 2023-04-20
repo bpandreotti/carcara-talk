@@ -552,13 +552,13 @@ proofs in the Alethe format}
 \end{frame}
 
 \begin{frame}
-  \frametitle{Example}
+  \frametitle{Example of an Alethe proof}
   $$(\forall x \;.\; x \geq 0) \land \neg (\forall y \;.\; y \geq 0)$$
 \end{frame}
 \addtocounter{framenumber}{-1}
 
 \begin{frame}
-  \frametitle{Example}
+  \frametitle{Example of an Alethe proof}
   $$(\forall x \;.\; x \geq 0) \land \neg (\forall y \;.\; y \geq 0)$$
   \vfill
   \begin{prooftree}
@@ -584,7 +584,7 @@ proofs in the Alethe format}
 \addtocounter{framenumber}{-1}
 
 \begin{frame}[fragile]
-  \frametitle{Example}
+  \frametitle{Example of an Alethe proof}
   \begin{minted}[autogobble, fontsize=\footnotesize, frame=single]{smtlib2.py -x}
     (set-logic LIA)
     (assert (forall ((x Int)) (>= x 0)))
@@ -614,7 +614,7 @@ proofs in the Alethe format}
 \addtocounter{framenumber}{-1}
 
 \begin{frame}[fragile]
-  \frametitle{Example}
+  \frametitle{Example of an Alethe proof}
   \centering
   \begin{minted}[autogobble, fontsize=\footnotesize, frame=single]{smtlib2.py -x}
     (set-logic LIA)
@@ -629,9 +629,9 @@ proofs in the Alethe format}
     (step t3.t1 (cl (= x y)) :rule refl)
     (step t3.t2 (cl (= (>= x 0) (>= y 0))) :rule cong :premises (t3.t1))
     (step t3 (cl (= (forall ((x Int)) (>= x 0)) (forall ((y Int)) (>= y 0))))
-      :rule bind)
+        :rule bind)
     (step t4 (cl (not (forall ((x Int)) (>= x 0))) (forall ((y Int)) (>= y 0)))
-      :rule equiv1 :premises (t3))
+        :rule equiv1 :premises (t3))
     (step t5 (cl) :rule resolution :premises (t4 h1 h2))
   \end{minted}
 \end{frame}
@@ -869,7 +869,7 @@ proofs in the Alethe format}
           :rule lia_generic)
     \end{minted}
     \vitem In this case, the checker would need to search for the coefficients,
-    which is an NP-Hard problem
+    which is an NP-hard problem
     \vitem Instead, occurences of this rule are not checked, and are considered
     holes by Carcara
   \end{itemize}
@@ -1198,6 +1198,8 @@ proofs in the Alethe format}
     \includegraphics[width=1.05\textwidth]{images/by-rules-elaborated-total.png}
   \end{minipage}
 \end{frame}
+
+\section{Demo!}
 
 \begin{frame}
   \frametitle{Future Work}
