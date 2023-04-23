@@ -1192,22 +1192,54 @@ proofs in the Alethe format}
   \includegraphics[height=0.85\textheight]{images/by-rules-comp.png}
 \end{frame}
 
+\begin{frame}
+  \frametitle{Elaboration of \texttt{lia\_generic} holes}
+  \begin{itemize}
+    \item We also ran experiments with elaboration of \texttt{lia\_generic}
+      enabled
+    \vitem In the benchmark set, there were 276 proofs, with a total of 127k
+    \texttt{lia\_generic} steps
+    \begin{itemize}
+      \item 15 proofs were discarded due to limitations in cvc5's Alethe support
+      \item Carcara timed out on 13 proofs
+    \end{itemize}
+    \vitem We used a 30 minute timeout for Carcara, and a 30 second timeout for
+    cvc5 for each \texttt{lia\_generic} step
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Elaboration of \texttt{lia\_generic} holes}
+  \begin{itemize}
+    \item Of the remaining 261 proofs, 82 still cointained \texttt{lia\_generic}
+      holes after elaboration
+    \begin{itemize}
+      \item In some cases, caused by cvc5 time outs, and in others by the cvc5
+        generated proof itself containing \texttt{lia\_generic} steps
+    \end{itemize}
+    \vitem All of the proofs contained holes caused by unsupported cvc5 rewriting steps
+    \vitem However, these holes are simpler and less worrying than the original
+    ones
+  \end{itemize}
+\end{frame}
+
 \section{Demo!}
 
 \begin{frame}
-  \frametitle{Future Work}
+  \frametitle{Conclusion}
+
   \begin{itemize}
-    \item Parallelization of proof checking
+    \item Good performance in checking SMT proofs
+    \vitem Elaboration has potential when used as a bridge between solvers and
+    proof assistants
+    \vitem Carcara is already being used by SMT solver delevopers!
+    \vitem Future work
     \begin{itemize}
-      \item Proof steps in the same context are independent, and can be checked
-      in parallel
+      \item Parallelization of proof checking
+      \item Proof compression
+      \item Support for new theories: strings, bitvectors
+      \item Proof translation into other formats: Dedukti
     \end{itemize}
-    \vitem Support for new theories
-    \begin{itemize}
-      \item Strings, bitvectors
-    \end{itemize}
-    \vitem Proof translation into other formats
-    \vitem Proof compression
   \end{itemize}
 \end{frame}
 
