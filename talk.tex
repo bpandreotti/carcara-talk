@@ -887,81 +887,13 @@ proofs in the Alethe format}
   \end{itemize}
 \end{frame}
 
-\begin{frame}[fragile]
-  \frametitle{A motivating example: transitivity}
-  \begin{itemize}
-    \item In Alethe, \texttt{eq\_transitive} is one of the rules that reasons
-    about the transitivity of equality
-    \vitem In general, a step of this rule looks like this:
-    \begin{minted}[autogobble, fontsize=\footnotesize, frame=single]{smtlib2.py -x}
-      (step t1 (cl (not (= a b)) (not (= b c)) (not (= c d)) (= a d)) :rule eq_transitive)
-    \end{minted}
-    \vitem In a more natural notation, it introduces the tautology:
-    $$(a \neq b) \lor (b \neq c) \lor (c \neq d) \lor (a = d)$$
-  \end{itemize}
-\end{frame}
-
-\begin{frame}[fragile]
-  \frametitle{A motivating example: transitivity}
-  \begin{itemize}
-    \item However, the specification of this rule is very permissive
-    \begin{itemize}
-      \item The order of the transitive chain may be shuffled
-      \item Each negated equality may also be flipped
-    \end{itemize}
-    \vitem Therefore, the following is also a valid \texttt{eq\_transitive}
-    step:
-    \begin{minted}[autogobble, fontsize=\footnotesize, frame=single]{smtlib2.py -x}
-      (step t1 (cl (not (= b a)) (not (= c d)) (not (= c b)) (= a d)) :rule eq_transitive)
-    \end{minted}
-    \vitem This means that checking \texttt{eq\_transitive} is in general quadratic on
-    the length of the clause (instead of linear)
-  \end{itemize}
-\end{frame}
-
-\begin{frame}
-  \frametitle{Elaborating \texttt{eq\_transitive}}
-  \begin{itemize}
-    \item A possible elaboration procedure for \texttt{eq\_transitive} might
-    change the clause to ``unshuffle'' the transitive chain, and ``unflip'' the
-    needed equalities
-    \vitem However, steps later in the proof may refer to the
-    \texttt{eq\_transitive} step as premise, so we can't just change the
-    conclusion caluse
-    \vitem Instead, we must also add  steps that reconstruct the original
-    clause, so that it can still be referenced further down in the proof
-  \end{itemize}
-\end{frame}
-
-\begin{frame}[fragile]
-  \frametitle{Elaborating \texttt{eq\_transitive}}
-  \begin{itemize}
-    \item Here is an example \texttt{eq\_transitive} step:
-    \begin{minted}[autogobble, fontsize=\footnotesize, frame=single]{smtlib2.py -x}
-      (step t1 (cl (not (= b a)) (not (= c d)) (not (= c b)) (= a d)) :rule eq_transitive)
-    \end{minted}
-    \vitem ...and here is its elaboration:
-    \begin{minted}[autogobble, fontsize=\footnotesize, frame=single]{smtlib2.py -x}
-      (step t1.t1 (cl (not (= a b)) (not (= b c)) (not (= c d)) (= a d)) :rule eq_transitive)
-      (step t1.t2 (cl (not (= b a)) (= a b)) :rule eq_symmetric)
-      (step t1.t3 (cl (not (= c b)) (= b c)) :rule eq_symmetric)
-      (step t1.t4 (cl (not (= c d)) (= a d) (not (= b a)) (not (= c b)))
-          :rule resolution :premises (t1.t1 t1.t2 t1.t3))
-      (step t1 (cl (not (= b a)) (not (= c d)) (not (= c b)) (= a d))
-          :rule reordering :premises (t1.t4))
-    \end{minted}
-    \vitem The new \texttt{eq\_transitive} step, \texttt{t1.t1}, is now easy to
-    check, and the step \texttt{t1} still has the same conclusion clause
-  \end{itemize}
-\end{frame}
-
 \begin{frame}
   \frametitle{Removing the implicit reordering of equalities}
   \begin{itemize}
     \item As was mentioned earlier, SMT solvers may implicitly reorder
     equalities when producing Alethe proofs
     \vitem This makes checking more complicated and less efficient
-    \vitem An elaboration procedure was also developed to remove this implicit
+    \vitem An elaboration procedure was developed to remove this implicit
     transformation
   \end{itemize}
 \end{frame}
@@ -991,8 +923,9 @@ proofs in the Alethe format}
     \end{minipage}
     \vitem The proof would be simpler to check if \texttt{h2} was instead
     \texttt{(assume h2 (not (= b a)))}
-    \vitem But \texttt{t3} uses \texttt{h2} as a premise, so we can't just
-    change it --- like before, we also need to reconstruct the original
+    \vitem However, step \texttt{t3} uses \texttt{h2} as a premise, so we can't
+    just change its conclusion
+    \vitem Instead, we need to add steps that reconstruct the original
     conclusion
   \end{itemize}
 \end{frame}
