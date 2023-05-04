@@ -486,6 +486,8 @@ proofs in the Alethe format}
 \newcommand\notsotiny{\@setfontsize\notsotiny{7}{8}}
 \makeatother
 
+\newcommand\chighlight[2]{\setlength{\fboxsep}{0pt}\colorbox{#1}{#2\strut}}
+
 \begin{document}
 
 {
@@ -764,12 +766,12 @@ proofs in the Alethe format}
       (declare-const a Bool)
       (declare-const b Bool)
       (assert (= a b))
-      (assert |\colorbox{yellow}{(not (= b a))}|)
+      (assert |\chighlight{yellow!60}{(not (= b a))}|)
       (check-sat)
     \end{minted}
     \begin{minted}[autogobble, fontsize=\footnotesize, frame=single, escapeinside=||]{smtlib2.py -x}
       (assume h1 (= a b))
-      (assume h2 |\colorbox{yellow}{(not (= a b))}|)
+      (assume h2 |\chighlight{yellow!60}{(not (= a b))}|)
       (step t3 (cl) :rule resolution
           :premises (h1 h2))
     \end{minted}
@@ -794,16 +796,112 @@ proofs in the Alethe format}
       (declare-const a Bool)
       (declare-const b Bool)
       (assert (= a b))
-      (assert |\colorbox{yellow}{(not (= b a))}|)
+      (assert |\chighlight{yellow!60}{(not (= b a))}|)
       (check-sat)
     \end{minted}
     \begin{minted}[autogobble, fontsize=\footnotesize, frame=single, escapeinside=||]{smtlib2.py -x}
       (assume h1 (= a b))
-      (assume h2 |\colorbox{yellow}{(not (= a b))}|)
+      (assume h2 |\chighlight{yellow!60}{(not (= a b))}|)
       (step t3 (cl) :rule resolution
           :premises (h1 h2))
     \end{minted}
   \end{minipage}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Checking resolution steps}
+  \begin{itemize}
+    \item SMT proofs usually make heavy use of the resolution inference rule
+    \vitem In Alethe, this is modeled by the rule \texttt{resolution}
+    \vfill
+    \begin{prooftree}
+      \AxiomC{$A \lor p_1$}
+      \AxiomC{$B \lor \neg p_1 \lor p_2$}
+      \AxiomC{$C \lor \neg p_2 \lor p_3$}
+      \AxiomC{$D \lor \neg p_3$}
+      \RightLabel{\footnotesize\texttt{resolution}; $p_1, p_2, p_3$}
+      \QuaternaryInfC{$A \lor B \lor C \lor D$}
+    \end{prooftree}
+    \pause
+    \vitem Here, $p1$, $p2$ and $p3$ are called the pivots of the resolution
+    step
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{Checking resolution steps}
+  \begin{itemize}
+    \item In general, the pivots used in a \texttt{resolution} step are
+      not provided in the Alethe proof
+    \vitem The checker must then infer which pivot was used in each binary
+    resolution step
+  \end{itemize}
+  \begin{overprint}
+    \onslide<1>
+    \begin{minted}[autogobble, fontsize=\footnotesize, frame=single, escapeinside=||]{smtlib2.py -x}
+      (step t1 (cl a b c) :rule ...)
+      (step t2 (cl d (not b) e) :rule ...)
+      (step t3 (cl (not e) f (not g)) :rule ...)
+      (step t4 (cl g) :rule ...)
+      (step t5 (cl a c d f) :rule resolution :premsies (t1 t2 t3 t4))
+    \end{minted}
+    \onslide<2>
+    \begin{minted}[autogobble, fontsize=\footnotesize, frame=single, escapeinside=||]{smtlib2.py -x}
+      (step t1 (cl a |\chighlight{yellow!60}{b}| c) :rule ...)
+      (step t2 (cl d |\chighlight{yellow!60}{(not b)}| e) :rule ...)
+      (step t3 (cl (not e) f (not g)) :rule ...)
+      (step t4 (cl g) :rule ...)
+      (step t5 (cl a c d f) :rule resolution :premsies (t1 t2 t3 t4))
+    \end{minted}
+    \onslide<3>
+    \begin{minted}[autogobble, fontsize=\footnotesize, frame=single, escapeinside=||]{smtlib2.py -x}
+      (step t1 (cl a |\chighlight{yellow!60}{b}| c) :rule ...)
+      (step t2 (cl d |\chighlight{yellow!60}{(not b)}| |\chighlight{green!40}{e}|) :rule ...)
+      (step t3 (cl |\chighlight{green!40}{(not e)}| f (not g)) :rule ...)
+      (step t4 (cl g) :rule ...)
+      (step t5 (cl a c d f) :rule resolution :premsies (t1 t2 t3 t4))
+    \end{minted}
+    \onslide<4>
+    \begin{minted}[autogobble, fontsize=\footnotesize, frame=single, escapeinside=||]{smtlib2.py -x}
+      (step t1 (cl a |\chighlight{yellow!60}{b}| c) :rule ...)
+      (step t2 (cl d |\chighlight{yellow!60}{(not b)}| |\chighlight{green!40}{e}|) :rule ...)
+      (step t3 (cl |\chighlight{green!40}{(not e)}| f |\chighlight{blue!40}{(not g)}|) :rule ...)
+      (step t4 (cl |\chighlight{blue!40}{g}|) :rule ...)
+      (step t5 (cl a c d f) :rule resolution :premsies (t1 t2 t3 t4))
+    \end{minted}
+  \end{overprint}
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{Checking resolution steps: inferring the pivots}
+  \begin{itemize}
+    \item To do this, Carcara uses a greedy algorithm that looks at the
+    conclusion clause to guess which terms are pivots and which terms should be
+    kept
+    \vitem Without looking at the conclusion, it is not always possible to infer
+    the pivots:
+  \end{itemize}
+    \begin{minted}[autogobble, fontsize=\footnotesize, frame=single, escapeinside=||]{smtlib2.py -x}
+      (step t1 (cl p (not (not p))) :rule ...)
+      (step t2 (cl (not p)) :rule ...)
+      (step t3 (cl ???) :rule resolution :premsies (t1 t2))
+    \end{minted}
+\end{frame}
+\addtocounter{framenumber}{-1}
+\begin{frame}
+  \frametitle{Checking resolution steps: inferring the pivots}
+  \begin{itemize}
+    \item This greedy algorithm is relatively efficient, but incomplete --- some
+    valid resolution steps will be rejected by it
+    \vitem Carcara also uses a more complex algorithm (that is complete) as a
+    fallback
+    \begin{itemize}
+      \item It is based on a technique called "Reverse Unit Propagation"
+    \end{itemize}
+    \pause
+    \vitem If the pivots were provided, of course, checking would be both easy
+    and complete!
+  \end{itemize}
 \end{frame}
 
 \begin{frame}[fragile]
@@ -845,7 +943,7 @@ proofs in the Alethe format}
   \begin{minted}[autogobble, fontsize=\footnotesize, frame=single, escapeinside=||]{smtlib2.py -x}
     (step t1
         (cl (<= (- x) 1) (<= (+ (* 2 x) (* (- 3) y)) 2) (<= y (- 1)))
-        :rule la_generic |\colorbox{yellow}{:args (2 1 3)}|)
+        :rule la_generic |\chighlight{yellow!60}{:args (2 1 3)}|)
   \end{minted}
   \begin{itemize}
     \item Since \texttt{la\_generic} steps provide the needed coefficients as
