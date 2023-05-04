@@ -1002,6 +1002,36 @@ proofs in the Alethe format}
   \end{itemize}
 \end{frame}
 
+\begin{frame}[b, fragile]
+  \frametitle{Adding resolution pivots}
+  \only<1>{
+    \begin{itemize}
+      \item As we saw, since \texttt{resolution} steps do not indicate the pivots
+      used, checking this rule can be tricky
+      \vitem We developed an elaboration procedure that finds these pivots (using
+      the greedy algorithm) and adds them as arguments to the step
+    \end{itemize}
+  }
+  \only<2>{
+    \begin{itemize}
+      \item For each pivot, we provide two arguments: the pivot term itself, and
+       a boolean indicating its polarity
+      \vitem Since this uses the greedy (incomplete) algorithm, not all
+      resolution steps can be elaborated with this technique
+    \end{itemize}
+  }
+  \vfill
+  \begin{minted}[autogobble, fontsize=\footnotesize, frame=single, escapeinside=||]{smtlib2.py -x}
+    (step t1 (cl a b c) :rule ...)
+    (step t2 (cl d (not b) e) :rule ...)
+    (step t3 (cl (not e) f (not g)) :rule ...)
+    (step t4 (cl g) :rule ...)
+    (step t5 (cl a c d f) :rule resolution :premsies (t1 t2 t3 t4)
+        |\chighlight{yellow!60}{:args (b true e true g false)}|)
+  \end{minted}
+  \bigskip
+\end{frame}
+
 \begin{frame}
   \frametitle{Removing \texttt{lia\_generic} holes}
   \begin{itemize}
@@ -1158,6 +1188,10 @@ proofs in the Alethe format}
   \frametitle{Proof elaboration}
   \begin{itemize}
     \item We also used Carcara to elaborate all proofs in the benchmark set
+    \begin{itemize}
+      \item Note that, for this experiment, elaboration of \texttt{lia\_generic}
+      and \texttt{resolution} were not used
+    \end{itemize}
     \vitem Then, we used it to check the elaborated proofs, and compared the
     performance
     \vitem Overall, proof elaboration sped up checking time by 6\%
