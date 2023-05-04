@@ -553,91 +553,59 @@ proofs in the Alethe format}
   \end{itemize}
 \end{frame}
 
-\begin{frame}
+\begin{frame}[fragile]
   \frametitle{Example of an Alethe proof}
-  $$(\forall x \;.\; p(x)) \land \neg (\forall y \;.\; p(y))$$
-\end{frame}
-\addtocounter{framenumber}{-1}
 
-\begin{frame}
-  \frametitle{Example of an Alethe proof}
-  $$(\forall x \;.\; p(x)) \land \neg (\forall y \;.\; p(y))$$
+  \begin{minipage}[c][0.3 \textheight]{\textwidth}
+    \only<1-2>{ $$(\forall x \;.\; p(x)) \land \neg (\forall y \;.\; p(y))$$ }
+    \begin{onlyenv}<3-4>
+      \begin{minted}[autogobble, fontsize=\footnotesize, frame=single]{smtlib2.py -x}
+        (set-logic LIA)
+        (declare-fun p (Int) Bool)
+        (assert (forall ((x Int)) (p x)))
+        (assert (not (forall ((y Int)) (p y))))
+        (check-sat)
+      \end{minted}
+    \end{onlyenv}
+  \end{minipage}
   \vfill
-  \begin{prooftree}
-    \AxiomC{}
-    \RightLabel{\footnotesize\texttt{assume}}
-    \UnaryInfC{$(\forall x \;.\; p(x))$}
-    \AxiomC{}
-    \RightLabel{\footnotesize\texttt{assume}}
-    \UnaryInfC{$\neg(\forall y \;.\; p(y))$}
-    \AxiomC{}
-    \RightLabel{\footnotesize\texttt{refl}}
-    \UnaryInfC{$x \mapsto y \vartriangleright\, x = y$}
-    \RightLabel{\footnotesize\texttt{cong}}
-    \UnaryInfC{$x \mapsto y \vartriangleright\, p(x) = p(y)$}
-    \RightLabel{\footnotesize\texttt{bind}}
-    \UnaryInfC{$(\forall x \;.\; p(x)) = (\forall y \;.\; p(y))$}
-    \RightLabel{\footnotesize\texttt{equiv1}}
-    \UnaryInfC{$\neg (\forall x \;.\; p(x)) \lor (\forall y \;.\; p(y))$}
-    \RightLabel{\footnotesize\texttt{resolution}}
-    \TrinaryInfC{$\bot$}
-  \end{prooftree}
-\end{frame}
-\addtocounter{framenumber}{-1}
-
-\begin{frame}[fragile]
-  \frametitle{Example of an Alethe proof}
-  \begin{minted}[autogobble, fontsize=\footnotesize, frame=single]{smtlib2.py -x}
-    (set-logic LIA)
-    (declare-fun p (Int) Bool)
-    (assert (forall ((x Int)) (p x)))
-    (assert (not (forall ((y Int)) (p y))))
-    (check-sat)
-  \end{minted}
-  \begin{prooftree}
-    \AxiomC{}
-    \RightLabel{\footnotesize\texttt{assume}}
-    \UnaryInfC{$(\forall x \;.\; p(x))$}
-    \AxiomC{}
-    \RightLabel{\footnotesize\texttt{assume}}
-    \UnaryInfC{$\neg(\forall y \;.\; p(y))$}
-    \AxiomC{}
-    \RightLabel{\footnotesize\texttt{refl}}
-    \UnaryInfC{$x \mapsto y \vartriangleright\, x = y$}
-    \RightLabel{\footnotesize\texttt{cong}}
-    \UnaryInfC{$x \mapsto y \vartriangleright\, p(x) = p(y)$}
-    \RightLabel{\footnotesize\texttt{bind}}
-    \UnaryInfC{$(\forall x \;.\; p(x)) = (\forall y \;.\; p(y))$}
-    \RightLabel{\footnotesize\texttt{equiv1}}
-    \UnaryInfC{$\neg (\forall x \;.\; p(x)) \lor (\forall y \;.\; p(y))$}
-    \RightLabel{\footnotesize\texttt{resolution}}
-    \TrinaryInfC{$\bot$}
-  \end{prooftree}
-\end{frame}
-\addtocounter{framenumber}{-1}
-
-\begin{frame}[fragile]
-  \frametitle{Example of an Alethe proof}
-  \centering
-  \begin{minted}[autogobble, fontsize=\footnotesize, frame=single]{smtlib2.py -x}
-    (set-logic LIA)
-    (declare-fun p (Int) Bool)
-    (assert (forall ((x Int)) (p x)))
-    (assert (not (forall ((y Int)) (p y))))
-    (check-sat)
-  \end{minted}
-  \begin{minted}[autogobble, fontsize=\footnotesize, frame=single]{smtlib2.py -x}
-    (assume h1 (forall ((x Int)) (p x)))
-    (assume h2 (not (forall ((y Int)) (p y))))
-    (anchor :step t3 :args ((y Int) (:= x y)))
-    (step t3.t1 (cl (= x y)) :rule refl)
-    (step t3.t2 (cl (= (p x) (p y))) :rule cong :premises (t3.t1))
-    (step t3 (cl (= (forall ((x Int)) (p x)) (forall ((y Int)) (p y))))
-        :rule bind)
-    (step t4 (cl (not (forall ((x Int)) (p x))) (forall ((y Int)) (p y)))
-        :rule equiv1 :premises (t3))
-    (step t5 (cl) :rule resolution :premises (t4 h1 h2))
-  \end{minted}
+  \begin{minipage}[c][0.4 \textheight]{\textwidth}
+  \begin{onlyenv}<2-3>
+    \begin{prooftree}
+      \AxiomC{}
+      \RightLabel{\footnotesize\texttt{assume}}
+      \UnaryInfC{$(\forall x \;.\; p(x))$}
+      \AxiomC{}
+      \RightLabel{\footnotesize\texttt{assume}}
+      \UnaryInfC{$\neg(\forall y \;.\; p(y))$}
+      \AxiomC{}
+      \RightLabel{\footnotesize\texttt{refl}}
+      \UnaryInfC{$x \mapsto y \vartriangleright\, x = y$}
+      \RightLabel{\footnotesize\texttt{cong}}
+      \UnaryInfC{$x \mapsto y \vartriangleright\, p(x) = p(y)$}
+      \RightLabel{\footnotesize\texttt{bind}}
+      \UnaryInfC{$(\forall x \;.\; p(x)) = (\forall y \;.\; p(y))$}
+      \RightLabel{\footnotesize\texttt{equiv1}}
+      \UnaryInfC{$\neg (\forall x \;.\; p(x)) \lor (\forall y \;.\; p(y))$}
+      \RightLabel{\footnotesize\texttt{resolution}}
+      \TrinaryInfC{$\bot$}
+    \end{prooftree}
+  \end{onlyenv}
+  \begin{onlyenv}<4>
+    \begin{minted}[autogobble, fontsize=\footnotesize, frame=single]{smtlib2.py -x}
+      (assume h1 (forall ((x Int)) (p x)))
+      (assume h2 (not (forall ((y Int)) (p y))))
+      (anchor :step t3 :args ((y Int) (:= x y)))
+      (step t3.t1 (cl (= x y)) :rule refl)
+      (step t3.t2 (cl (= (p x) (p y))) :rule cong :premises (t3.t1))
+      (step t3 (cl (= (forall ((x Int)) (p x)) (forall ((y Int)) (p y))))
+          :rule bind)
+      (step t4 (cl (not (forall ((x Int)) (p x))) (forall ((y Int)) (p y)))
+          :rule equiv1 :premises (t3))
+      (step t5 (cl) :rule resolution :premises (t4 h1 h2))
+    \end{minted}
+  \end{onlyenv}
+  \end{minipage}
 \end{frame}
 
 \begin{frame}
@@ -751,44 +719,29 @@ proofs in the Alethe format}
 
 \begin{frame}[fragile]
   \frametitle{Checking \textit{assume} commands}
-  \begin{minipage}[c][0.45 \textheight]{0.55 \textwidth}
-    \begin{itemize}
-      \item However, the solver may implicitly reorder equalities when producing
-      a proof
-      \vitem This means an \texttt{assume} command may reference a problem premise
-      while implicitly reordering an equality inside it
-    \end{itemize}
-  \end{minipage}
-  \hfill
-  \begin{minipage}{0.4 \textwidth}
-    \begin{minted}[autogobble, fontsize=\footnotesize, frame=single, escapeinside=||]{smtlib2.py -x}
-      (set-logic QF_UF)
-      (declare-const a Bool)
-      (declare-const b Bool)
-      (assert (= a b))
-      (assert |\chighlight{green!40}{(not (= b a))}|)
-      (check-sat)
-    \end{minted}
-    \begin{minted}[autogobble, fontsize=\footnotesize, frame=single, escapeinside=||]{smtlib2.py -x}
-      (assume h1 (= a b))
-      (assume h2 |\chighlight{red!40}{(not (= a b))}|)
-      (step t3 (cl) :rule resolution
-          :premises (h1 h2))
-    \end{minted}
-  \end{minipage}
-\end{frame}
-
-\begin{frame}[fragile]
-  \frametitle{Checking \textit{assume} commands}
-  \begin{minipage}[c][0.55 \textheight]{0.55 \textwidth}
-    \begin{itemize}
-      \item In this case, the checker must iterate through all the premises and
-      see if they are equal to the \texttt{assume} term, modulo the reordering
-      of equalities
-      \vitem This requires traversing the terms, possibly up to their depth
-      \vitem We call this equality check a \textit{Polyequal} check
-    \end{itemize}
-  \end{minipage}
+  \begin{onlyenv}<1>
+    \begin{minipage}[c][0.75 \textheight]{0.55 \textwidth}
+      \begin{itemize}
+        \vitem However, the solver may implicitly reorder equalities when
+        producing a proof
+        \vitem This means an \texttt{assume} command may reference a problem
+        premise while implicitly reordering an equality inside it
+        \vfill
+      \end{itemize}
+    \end{minipage}
+  \end{onlyenv}
+  \begin{onlyenv}<2>
+    \begin{minipage}[c][0.75 \textheight]{0.55 \textwidth}
+      \begin{itemize}
+        \vitem In this case, the checker must iterate through all the premises
+        and see if they are equal to the \texttt{assume} term, modulo the
+        reordering of equalities
+        \vitem This requires traversing the terms, possibly up to their depth
+        \vitem We call this equality check a \textit{Polyequal} check
+        \vfill
+      \end{itemize}
+    \end{minipage}
+  \end{onlyenv}
   \hfill
   \begin{minipage}{0.4 \textwidth}
     \begin{minted}[autogobble, fontsize=\footnotesize, frame=single, escapeinside=||]{smtlib2.py -x}
@@ -919,39 +872,34 @@ proofs in the Alethe format}
     $$(-x \leq 1) \lor (2x - 3y \leq 2) \lor (y \leq -1)$$
   \end{itemize}
 \end{frame}
-
-\begin{frame}[t, fragile]
-  \frametitle{Checking linear arithmetic steps}
-  \begin{minted}[autogobble, fontsize=\footnotesize, frame=single]{smtlib2.py -x}
-    (step t1
-        (cl (<= (- x) 1) (<= (+ (* 2 x) (* (- 3) y)) 2) (<= y (- 1)))
-        :rule la_generic :args (2 1 3))
-  \end{minted}
-  \begin{itemize}
-    \item Checking that this clause is true is equivalent to proving that its
-    negation, the following three inequalites, are contradictory
-  \end{itemize}
-  \begin{align*}
-    -x &> 1\tag{a}\\
-    2x - 3y &> 2\tag{b}\\
-    y &> -1\tag{c}
-  \end{align*}
-\end{frame}
 \addtocounter{framenumber}{-1}
-
 \begin{frame}[t, fragile]
   \frametitle{Checking linear arithmetic steps}
-  \begin{minted}[autogobble, fontsize=\footnotesize, frame=single, escapeinside=||]{smtlib2.py -x}
-    (step t1
-        (cl (<= (- x) 1) (<= (+ (* 2 x) (* (- 3) y)) 2) (<= y (- 1)))
-        :rule la_generic |\chighlight{yellow!60}{:args (2 1 3)}|)
-  \end{minted}
-  \begin{itemize}
-    \item Since \texttt{la\_generic} steps provide the needed coefficients as
-    arguments, checking them is simple
-    \vitem Computing $2 \cdot (a) + 1 \cdot (b) + 3 \cdot (c)$, we get $0 > 1$,
-    so the step must be true
-  \end{itemize}
+  \begin{onlyenv}<1>
+    \begin{minted}[autogobble, fontsize=\footnotesize, frame=single]{smtlib2.py -x}
+      (step t1
+          (cl (<= (- x) 1) (<= (+ (* 2 x) (* (- 3) y)) 2) (<= y (- 1)))
+          :rule la_generic :args (2 1 3))
+    \end{minted}
+    \begin{itemize}
+      \item Checking that this clause is true is equivalent to proving that its
+      negation, the following three inequalites, are contradictory
+    \end{itemize}
+  \end{onlyenv}
+  \begin{onlyenv}<2>
+    \begin{minted}[autogobble, fontsize=\footnotesize, frame=single, escapeinside=||]{smtlib2.py -x}
+      (step t1
+          (cl (<= (- x) 1) (<= (+ (* 2 x) (* (- 3) y)) 2) (<= y (- 1)))
+          :rule la_generic |\chighlight{yellow!60}{:args (2 1 3)}|)
+    \end{minted}
+    \begin{itemize}
+      \item Since \texttt{la\_generic} steps provide the needed coefficients as
+      arguments, checking them is simple
+      \vitem Computing $2 \cdot (a) + 1 \cdot (b) + 3 \cdot (c)$, we get $0 > 1$,
+      so the step must be true
+    \end{itemize}
+  \end{onlyenv}
+  \vfill
   \begin{align*}
     -x &> 1\tag{a}\\
     2x - 3y &> 2\tag{b}\\
