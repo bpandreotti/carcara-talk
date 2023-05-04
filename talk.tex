@@ -766,12 +766,12 @@ proofs in the Alethe format}
       (declare-const a Bool)
       (declare-const b Bool)
       (assert (= a b))
-      (assert |\chighlight{yellow!60}{(not (= b a))}|)
+      (assert |\chighlight{green!40}{(not (= b a))}|)
       (check-sat)
     \end{minted}
     \begin{minted}[autogobble, fontsize=\footnotesize, frame=single, escapeinside=||]{smtlib2.py -x}
       (assume h1 (= a b))
-      (assume h2 |\chighlight{yellow!60}{(not (= a b))}|)
+      (assume h2 |\chighlight{red!40}{(not (= a b))}|)
       (step t3 (cl) :rule resolution
           :premises (h1 h2))
     \end{minted}
@@ -796,12 +796,12 @@ proofs in the Alethe format}
       (declare-const a Bool)
       (declare-const b Bool)
       (assert (= a b))
-      (assert |\chighlight{yellow!60}{(not (= b a))}|)
+      (assert |\chighlight{green!40}{(not (= b a))}|)
       (check-sat)
     \end{minted}
     \begin{minted}[autogobble, fontsize=\footnotesize, frame=single, escapeinside=||]{smtlib2.py -x}
       (assume h1 (= a b))
-      (assume h2 |\chighlight{yellow!60}{(not (= a b))}|)
+      (assume h2 |\chighlight{red!40}{(not (= a b))}|)
       (step t3 (cl) :rule resolution
           :premises (h1 h2))
     \end{minted}
@@ -1004,20 +1004,20 @@ proofs in the Alethe format}
     \item For example, consider the following SMT problem, and its corresponding
     proof:
     \begin{minipage}[t]{0.35 \textwidth}
-      \begin{minted}[autogobble, fontsize=\footnotesize, frame=single]{smtlib2.py -x}
+      \begin{minted}[autogobble, fontsize=\footnotesize, frame=single, escapeinside=||]{smtlib2.py -x}
         (set-logic QF_UF)
         (declare-const a Bool)
         (declare-const b Bool)
         (assert (= a b))
-        (assert (not (= b a)))
+        (assert |\chighlight{green!40}{(not (= b a))}|)
         (check-sat)
       \end{minted}
     \end{minipage}
     \hfill
     \begin{minipage}[t]{0.6 \textwidth}
-      \begin{minted}[autogobble, fontsize=\footnotesize, frame=single]{smtlib2.py -x}
+      \begin{minted}[autogobble, fontsize=\footnotesize, frame=single, escapeinside=||]{smtlib2.py -x}
         (assume h1 (= a b))
-        (assume h2 (not (= a b)))
+        (assume h2 |\chighlight{red!40}{(not (= a b))}|)
         (step t3 (cl) :rule resolution :premises (h1 h2))
       \end{minted}
     \end{minipage}
@@ -1033,19 +1033,19 @@ proofs in the Alethe format}
 \begin{frame}[fragile]
   \frametitle{Removing the implicit reordering of equalities}
   \begin{itemize}
-    \begin{minted}[autogobble, fontsize=\footnotesize, frame=single]{smtlib2.py -x}
+    \begin{minted}[autogobble, fontsize=\footnotesize, frame=single, escapeinside=||]{smtlib2.py -x}
       (assume h1 (= a b))
-      (assume h2 (not (= a b)))
+      (assume h2 |\chighlight{red!40}{(not (= a b))}|)
       (step t3 (cl) :rule resolution :premises (h1 h2))
     \end{minted}
     \vitem This is the correct elaboration of the proof:
-    \begin{minted}[autogobble, fontsize=\footnotesize, frame=single]{smtlib2.py -x}
+    \begin{minted}[autogobble, fontsize=\footnotesize, frame=single, escapeinside=||]{smtlib2.py -x}
       (assume h1 (= a b))
-      (assume h2 (not (= b a)))
+      (assume h2 |\chighlight{green!40}{(not (= b a))}|)
       (step h2.t1 (cl (= (= b a) (= a b))) :rule equiv_simplify)
       (step h2.t2 (cl (= (not (= b a)) (not (= a b)))) :rule cong :premises (h2.t1))
       (step h2.t3 (cl (not (not (= b a))) (not (= a b))) :rule equiv1 :premises (h2.t2))
-      (step h2.t4 (cl (not (= a b))) :rule resolution :premises (h2 h2.t3))
+      (step h2.t4 (cl |\chighlight{red!40}{(not (= a b))}|) :rule resolution :premises (h2 h2.t3))
       (step t3 (cl) :rule resolution :premises (h1 h2.t4))
     \end{minted}
     \vitem Now \texttt{h2} refers to the premise as it appeared in the original
