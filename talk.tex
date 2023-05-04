@@ -823,7 +823,7 @@ proofs in the Alethe format}
       \QuaternaryInfC{$A \lor B \lor C \lor D$}
     \end{prooftree}
     \pause
-    \vitem Here, $p1$, $p2$ and $p3$ are called the pivots of the resolution
+    \vitem Here, $p1$, $p2$ and $p3$ are the pivots of the resolution
     step
   \end{itemize}
 \end{frame}
@@ -881,11 +881,12 @@ proofs in the Alethe format}
     \vitem Without looking at the conclusion, it is not always possible to infer
     the pivots:
   \end{itemize}
-    \begin{minted}[autogobble, fontsize=\footnotesize, frame=single, escapeinside=||]{smtlib2.py -x}
-      (step t1 (cl p (not (not p))) :rule ...)
-      (step t2 (cl (not p)) :rule ...)
-      (step t3 (cl ???) :rule resolution :premsies (t1 t2))
-    \end{minted}
+  \vfill
+  \begin{minted}[autogobble, fontsize=\footnotesize, frame=single, escapeinside=||]{smtlib2.py -x}
+    (step t1 (cl p (not (not p))) :rule ...)
+    (step t2 (cl (not p)) :rule ...)
+    (step t3 (cl ???) :rule resolution :premsies (t1 t2))
+  \end{minted}
 \end{frame}
 \addtocounter{framenumber}{-1}
 \begin{frame}
