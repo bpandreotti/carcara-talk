@@ -555,22 +555,22 @@ proofs in the Alethe format}
 
 \begin{frame}[fragile]
   \frametitle{Example of an Alethe proof}
-
-  \begin{minipage}[c][0.3 \textheight]{\textwidth}
-    \only<1-2>{ $$(\forall x \;.\; p(x)) \land \neg (\forall y \;.\; p(y))$$ }
-    \begin{onlyenv}<3-4>
-      \begin{minted}[autogobble, fontsize=\footnotesize, frame=single]{smtlib2.py -x}
-        (set-logic LIA)
-        (declare-fun p (Int) Bool)
-        (assert (forall ((x Int)) (p x)))
-        (assert (not (forall ((y Int)) (p y))))
-        (check-sat)
-      \end{minted}
-    \end{onlyenv}
-  \end{minipage}
+  \begin{overprint}
+    \onslide<1-2>
+    \medskip
+    $$(\forall x \;.\; p(x)) \land \neg (\forall y \;.\; p(y))$$
+    \onslide<3-4>
+    \begin{minted}[autogobble, fontsize=\footnotesize, frame=single]{smtlib2.py -x}
+      (set-logic LIA)
+      (declare-fun p (Int) Bool)
+      (assert (forall ((x Int)) (p x)))
+      (assert (not (forall ((y Int)) (p y))))
+      (check-sat)
+    \end{minted}
+  \end{overprint}
   \vfill
-  \begin{minipage}[c][0.4 \textheight]{\textwidth}
-  \begin{onlyenv}<2-3>
+  \begin{overprint}
+    \onslide<2-3>
     \begin{prooftree}
       \AxiomC{}
       \RightLabel{\footnotesize\texttt{assume}}
@@ -590,8 +590,7 @@ proofs in the Alethe format}
       \RightLabel{\footnotesize\texttt{resolution}}
       \TrinaryInfC{$\bot$}
     \end{prooftree}
-  \end{onlyenv}
-  \begin{onlyenv}<4>
+    \onslide<4>
     \begin{minted}[autogobble, fontsize=\footnotesize, frame=single]{smtlib2.py -x}
       (assume h1 (forall ((x Int)) (p x)))
       (assume h2 (not (forall ((y Int)) (p y))))
@@ -604,8 +603,7 @@ proofs in the Alethe format}
           :rule equiv1 :premises (t3))
       (step t5 (cl) :rule resolution :premises (t4 h1 h2))
     \end{minted}
-  \end{onlyenv}
-  \end{minipage}
+  \end{overprint}
 \end{frame}
 
 \begin{frame}
