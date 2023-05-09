@@ -1173,20 +1173,14 @@ proofs in the Alethe format}
 
 \begin{frame}
   \frametitle{Proof checking}
-  \begin{minipage}{0.64 \textwidth}
+  \begin{minipage}{0.48 \textwidth}
     \centering
-    \includegraphics[height=0.9\textheight]{images/by-rules-boxplot.png}
+    \includegraphics[height=0.9\textheight]{images/by-rules-total.png}
   \end{minipage}
   \hfill
-  \begin{minipage}[c][0.8 \textheight]{0.3 \textwidth}
-    \begin{itemize}
-      \item \texttt{resolution} and \texttt{refl} are simple to check, but very
-      frequent
-      \vitem \texttt{la\_generic} and \texttt{ac\_simp} are much less frequent,
-      but checking them is more expensive
-      \vitem Note how \texttt{assume} has some very expensive worst cases
-      \vfill
-    \end{itemize}
+  \begin{minipage}{0.48 \textwidth}
+    \centering
+    \includegraphics[height=0.9\textheight]{images/by-rules-boxplot.png}
   \end{minipage}
 \end{frame}
 
