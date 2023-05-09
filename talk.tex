@@ -917,6 +917,7 @@ proofs in the Alethe format}
     \end{minted}
     \vitem In this case, the checker would need to search for the coefficients,
     which is an NP-hard problem
+    \pause
     \vitem Instead, occurences of this rule are not checked, and are considered
     holes by Carcara
   \end{itemize}
@@ -972,6 +973,7 @@ proofs in the Alethe format}
     \texttt{(assume h2 (not (= b a)))}
     \vitem However, step \texttt{t3} uses \texttt{h2} as a premise, so we can't
     just change its conclusion
+    \pause
     \vitem Instead, we need to add steps that reconstruct the original
     conclusion
   \end{itemize}
@@ -997,6 +999,7 @@ proofs in the Alethe format}
     \end{minted}
     \vitem Now \texttt{h2} refers to the premise as it appeared in the original
     problem, and the added steps reconstruct the original \texttt{h2} conclusion
+    \pause
     \vitem The step \texttt{t3}, that used to reference \texttt{h2}, now
     references \texttt{h2.t4}
   \end{itemize}
@@ -1012,11 +1015,11 @@ proofs in the Alethe format}
       the greedy algorithm) and adds them as arguments to the step
     \end{itemize}
   }
-  \only<2>{
+  \only<2->{
     \begin{itemize}
-      \item For each pivot, we provide two arguments: the pivot term itself, and
-       a boolean indicating its polarity
-      \vitem Since this uses the greedy (incomplete) algorithm, not all
+      \item<2-> For each pivot, we provide two arguments: the pivot term itself, and
+      a boolean indicating its polarity
+      \vitem<3> Since this uses the greedy (incomplete) algorithm, not all
       resolution steps can be elaborated with this technique
     \end{itemize}
   }
@@ -1039,6 +1042,7 @@ proofs in the Alethe format}
     check, and are considered holes by Carcara
     \vitem We developed an elaboration procedure that uses an SMT solver to
     expand these steps into finer-grained steps
+    \pause
     \vitem Conceivably this could use any solver that can read SMT-LIB, solve
     the linear integer arithmetic problem, and produce an Alethe proof
   \end{itemize}
@@ -1109,12 +1113,14 @@ proofs in the Alethe format}
 \begin{frame}
   \frametitle{Experimental setup}
   \begin{itemize}
-    \item We used the veriT SMT solver to generate Alethe proofs from all
-    problems in the SMT-LIB benchmark library
+    \item As a set of benchmarks, we used the SMT-LIB benchmark library
+    \vitem We then used the veriT SMT solver to generate Alethe proofs for
+    all benchmark problems
+    \pause
     \vitem This resulted in a 92 GB set of 39,229 proofs
     \vitem Most proofs are small (under 1 MB), but some can be very large
     \begin{itemize}
-      \item 14 proofs are over 1 GB, and the largest has 4.5 GB
+      \item 14 proofs are over 1 GB, and the largest is 4.5 GB
     \end{itemize}
   \end{itemize}
 \end{frame}
@@ -1194,7 +1200,10 @@ proofs in the Alethe format}
     \end{itemize}
     \vitem Then, we used it to check the elaborated proofs, and compared the
     performance
-    \vitem Overall, proof elaboration sped up checking time by 6\%
+    \pause
+    \vitem Overall, proof elaboration sped up checking time by 6\% (excluding
+    parsing time)
+    \pause
     \vitem On the other hand, parsing time increased, such that the overall
     runtime is virtually the same
   \end{itemize}
@@ -1232,6 +1241,7 @@ proofs in the Alethe format}
         generated proof itself containing \texttt{lia\_generic} steps
     \end{itemize}
     \vitem All of the proofs contained holes caused by unsupported cvc5 rewriting steps
+    \pause
     \vitem However, these holes are simpler and less worrying than the original
     ones
   \end{itemize}
