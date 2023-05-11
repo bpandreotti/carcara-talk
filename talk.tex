@@ -791,35 +791,71 @@ proofs in the Alethe format}
     \onslide<1>
     \begin{minted}[autogobble, fontsize=\footnotesize, frame=single, escapeinside=||]{smtlib2.py -x}
       (step t1 (cl a b c) :rule ...)
-      (step t2 (cl d (not b) e) :rule ...)
-      (step t3 (cl (not e) f (not g)) :rule ...)
-      (step t4 (cl g) :rule ...)
-      (step t5 (cl a c d f) :rule resolution :premsies (t1 t2 t3 t4))
+      (step t2 (cl (not a) d) :rule ...)
+      (step t3 (cl (not c) e (not f)) :rule ...)
+      (step t4 (cl f) :rule ...)
+      (step t5 (cl b d e) :rule resolution :premsies (t1 t2 t3 t4))
     \end{minted}
+    \begin{prooftree}
+      \AxiomC{$a \lor b \lor c$}
+      \AxiomC{$\neg a \lor d$}
+      \BinaryInfC{???}
+      \AxiomC{$\neg c \lor e \lor \neg f$}
+      \BinaryInfC{???}
+      \AxiomC{$f$}
+      \BinaryInfC{???}
+    \end{prooftree}
     \onslide<2>
     \begin{minted}[autogobble, fontsize=\footnotesize, frame=single, escapeinside=||]{smtlib2.py -x}
-      (step t1 (cl a |\chighlight{yellow!60}{b}| c) :rule ...)
-      (step t2 (cl d |\chighlight{yellow!60}{(not b)}| e) :rule ...)
-      (step t3 (cl (not e) f (not g)) :rule ...)
-      (step t4 (cl g) :rule ...)
-      (step t5 (cl a c d f) :rule resolution :premsies (t1 t2 t3 t4))
+      (step t1 (cl |\chighlight{yellow!60}{a}| b c) :rule ...)
+      (step t2 (cl |\chighlight{yellow!60}{(not a)}| d) :rule ...)
+      (step t3 (cl (not c) e (not f)) :rule ...)
+      (step t4 (cl f) :rule ...)
+      (step t5 (cl b d e) :rule resolution :premsies (t1 t2 t3 t4))
     \end{minted}
+    \begin{prooftree}
+      \AxiomC{$a \lor b \lor c$}
+      \AxiomC{$\neg a \lor d$}
+      \BinaryInfC{$b \lor c \lor d$}
+      \AxiomC{$\neg c \lor e \lor \neg f$}
+      \BinaryInfC{???}
+      \AxiomC{$f$}
+      \BinaryInfC{???}
+    \end{prooftree}
     \onslide<3>
     \begin{minted}[autogobble, fontsize=\footnotesize, frame=single, escapeinside=||]{smtlib2.py -x}
-      (step t1 (cl a |\chighlight{yellow!60}{b}| c) :rule ...)
-      (step t2 (cl d |\chighlight{yellow!60}{(not b)}| |\chighlight{green!40}{e}|) :rule ...)
-      (step t3 (cl |\chighlight{green!40}{(not e)}| f (not g)) :rule ...)
-      (step t4 (cl g) :rule ...)
-      (step t5 (cl a c d f) :rule resolution :premsies (t1 t2 t3 t4))
+      (step t1 (cl |\chighlight{yellow!60}{a}| b |\chighlight{green!40}{c}|) :rule ...)
+      (step t2 (cl |\chighlight{yellow!60}{(not a)}| d) :rule ...)
+      (step t3 (cl |\chighlight{green!40}{(not c)}| e (not f)) :rule ...)
+      (step t4 (cl f) :rule ...)
+      (step t5 (cl b d e) :rule resolution :premsies (t1 t2 t3 t4))
     \end{minted}
+    \begin{prooftree}
+      \AxiomC{$a \lor b \lor c$}
+      \AxiomC{$\neg a \lor d$}
+      \BinaryInfC{$b \lor c \lor d$}
+      \AxiomC{$\neg c \lor e \lor \neg f$}
+      \BinaryInfC{$b \lor d \lor e \lor \neg f$}
+      \AxiomC{$f$}
+      \BinaryInfC{???}
+    \end{prooftree}
     \onslide<4>
     \begin{minted}[autogobble, fontsize=\footnotesize, frame=single, escapeinside=||]{smtlib2.py -x}
-      (step t1 (cl a |\chighlight{yellow!60}{b}| c) :rule ...)
-      (step t2 (cl d |\chighlight{yellow!60}{(not b)}| |\chighlight{green!40}{e}|) :rule ...)
-      (step t3 (cl |\chighlight{green!40}{(not e)}| f |\chighlight{blue!40}{(not g)}|) :rule ...)
-      (step t4 (cl |\chighlight{blue!40}{g}|) :rule ...)
-      (step t5 (cl a c d f) :rule resolution :premsies (t1 t2 t3 t4))
+      (step t1 (cl |\chighlight{yellow!60}{a}| b |\chighlight{green!40}{c}|) :rule ...)
+      (step t2 (cl |\chighlight{yellow!60}{(not a)}| d) :rule ...)
+      (step t3 (cl |\chighlight{green!40}{(not c)}| e |\chighlight{blue!40}{(not f)}|) :rule ...)
+      (step t4 (cl |\chighlight{blue!40}{f}|) :rule ...)
+      (step t5 (cl b d e) :rule resolution :premsies (t1 t2 t3 t4))
     \end{minted}
+    \begin{prooftree}
+      \AxiomC{$a \lor b \lor c$}
+      \AxiomC{$\neg a \lor d$}
+      \BinaryInfC{$b \lor c \lor d$}
+      \AxiomC{$\neg c \lor e \lor \neg f$}
+      \BinaryInfC{$b \lor d \lor e \lor \neg f$}
+      \AxiomC{$f$}
+      \BinaryInfC{$b \lor d \lor e$}
+    \end{prooftree}
   \end{overprint}
 \end{frame}
 
@@ -1026,11 +1062,11 @@ proofs in the Alethe format}
   \vfill
   \begin{minted}[autogobble, fontsize=\footnotesize, frame=single, escapeinside=||]{smtlib2.py -x}
     (step t1 (cl a b c) :rule ...)
-    (step t2 (cl d (not b) e) :rule ...)
-    (step t3 (cl (not e) f (not g)) :rule ...)
-    (step t4 (cl g) :rule ...)
-    (step t5 (cl a c d f) :rule resolution :premsies (t1 t2 t3 t4)
-        |\chighlight{yellow!60}{:args (b true e true g false)}|)
+    (step t2 (cl (not a) d) :rule ...)
+    (step t3 (cl (not c) e (not f)) :rule ...)
+    (step t4 (cl f) :rule ...)
+    (step t5 (cl b d e) :rule resolution :premsies (t1 t2 t3 t4)
+        |\chighlight{yellow!60}{:args (a true c true f false)}|)
   \end{minted}
   \bigskip
 \end{frame}
