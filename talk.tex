@@ -794,7 +794,7 @@ proofs in the Alethe format}
       (step t2 (cl (not a) d) :rule ...)
       (step t3 (cl (not c) e (not f)) :rule ...)
       (step t4 (cl f) :rule ...)
-      (step t5 (cl b d e) :rule resolution :premsies (t1 t2 t3 t4))
+      (step t5 (cl b d e) :rule resolution :premises (t1 t2 t3 t4))
     \end{minted}
     \begin{prooftree}
       \AxiomC{$a \lor b \lor c$}
@@ -811,7 +811,7 @@ proofs in the Alethe format}
       (step t2 (cl |\chighlight{yellow!60}{(not a)}| d) :rule ...)
       (step t3 (cl (not c) e (not f)) :rule ...)
       (step t4 (cl f) :rule ...)
-      (step t5 (cl b d e) :rule resolution :premsies (t1 t2 t3 t4))
+      (step t5 (cl b d e) :rule resolution :premises (t1 t2 t3 t4))
     \end{minted}
     \begin{prooftree}
       \AxiomC{$a \lor b \lor c$}
@@ -828,7 +828,7 @@ proofs in the Alethe format}
       (step t2 (cl |\chighlight{yellow!60}{(not a)}| d) :rule ...)
       (step t3 (cl |\chighlight{green!40}{(not c)}| e (not f)) :rule ...)
       (step t4 (cl f) :rule ...)
-      (step t5 (cl b d e) :rule resolution :premsies (t1 t2 t3 t4))
+      (step t5 (cl b d e) :rule resolution :premises (t1 t2 t3 t4))
     \end{minted}
     \begin{prooftree}
       \AxiomC{$a \lor b \lor c$}
@@ -845,7 +845,7 @@ proofs in the Alethe format}
       (step t2 (cl |\chighlight{yellow!60}{(not a)}| d) :rule ...)
       (step t3 (cl |\chighlight{green!40}{(not c)}| e |\chighlight{blue!40}{(not f)}|) :rule ...)
       (step t4 (cl |\chighlight{blue!40}{f}|) :rule ...)
-      (step t5 (cl b d e) :rule resolution :premsies (t1 t2 t3 t4))
+      (step t5 (cl b d e) :rule resolution :premises (t1 t2 t3 t4))
     \end{minted}
     \begin{prooftree}
       \AxiomC{$a \lor b \lor c$}
@@ -872,7 +872,7 @@ proofs in the Alethe format}
   \begin{minted}[autogobble, fontsize=\footnotesize, frame=single, escapeinside=||]{smtlib2.py -x}
     (step t1 (cl p (not (not p))) :rule ...)
     (step t2 (cl (not p)) :rule ...)
-    (step t3 (cl ???) :rule resolution :premsies (t1 t2))
+    (step t3 (cl ???) :rule resolution :premises (t1 t2))
   \end{minted}
 \end{frame}
 \addtocounter{framenumber}{-1}
@@ -1065,7 +1065,7 @@ proofs in the Alethe format}
     (step t2 (cl (not a) d) :rule ...)
     (step t3 (cl (not c) e (not f)) :rule ...)
     (step t4 (cl f) :rule ...)
-    (step t5 (cl b d e) :rule resolution :premsies (t1 t2 t3 t4)
+    (step t5 (cl b d e) :rule resolution :premises (t1 t2 t3 t4)
         |\chighlight{yellow!60}{:args (a true c true f false)}|)
   \end{minted}
   \bigskip
